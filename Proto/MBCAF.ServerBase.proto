@@ -1,0 +1,220 @@
+syntax = "proto2";
+package MBCAF.ServerBase;
+import "MBCAF.Proto.proto";
+option optimize_for = LITE_RUNTIME;
+option java_package = "com.MBCAF.protobuf";
+option java_outer_classname="ServerBase";
+
+message Heartbeat
+{
+}
+
+message ServerInfo
+{
+	required uint32 type			= 1;
+	required string ip				= 2;
+	required string ip2				= 3;
+	required uint32 port			= 4;
+	required uint32 permission		= 5;
+	required uint32 max_conn_cnt	= 6;
+	required uint32 cur_conn_cnt	= 7;
+	required string host_name		= 8;
+	optional string tip				= 9;
+	optional bytes attach_data		= 17;
+}
+
+message ServerQ
+{
+	required uint32 type = 1;
+}
+
+message ServerA
+{
+	required MBCAF.Proto.ResultType result_code = 1;
+	optional string prior_ip = 2;
+	optional string backip_ip = 3; 
+	optional uint32 port = 4;
+}
+
+message ServerKick
+{
+	required uint32 user_id = 1;
+	required MBCAF.Proto.ClientType client_type = 2;
+	required uint32 reason = 3;
+}
+
+message LoginQ
+{
+	required string user_name = 1;
+	required string password = 2;
+	required MBCAF.Proto.ObjectStateType online_status = 3;
+	required MBCAF.Proto.ClientType client_type = 4;
+	optional string client_version = 5;
+}
+
+message LoginA
+{
+	required uint32 server_time = 1;
+	required MBCAF.Proto.ResultType result_code = 2;
+	optional string result_string = 3;
+	optional MBCAF.Proto.ObjectStateType online_status = 4;
+	optional MBCAF.Proto.UserInfo user_info = 5;
+}
+
+message LogoutQ
+{
+}
+
+message LogoutA
+{
+	required uint32 result_code = 1;
+}
+
+message KickConnect
+{
+	required uint32 user_id = 1;
+	required MBCAF.Proto.KickReasonType kick_reason = 2;
+}
+
+message KickPCConnectQ
+{
+	required uint32 user_id = 1;
+}
+
+message KickPCConnectA
+{
+	required uint32 user_id = 1;
+	required uint32 result_code = 2;
+}
+
+message TrayMsgQ
+{
+	required uint32 user_id = 1;
+	required string device_token = 2;
+	optional MBCAF.Proto.ClientType client_type = 3;
+	optional bytes attach_data = 17;
+}
+
+message TrayMsgA
+{
+	required uint32 user_id = 1;
+	optional bytes attach_data = 17;
+}
+
+message SwitchTrayMsgQ
+{
+	repeated uint32 user_id = 1;
+	optional bytes attach_data = 17;
+}
+
+message SwitchTrayMsgA
+{
+	repeated MBCAF.Proto.UserTokenInfo user_token_info = 1;
+	optional bytes attach_data = 17;
+}
+
+message PushShieldSQ
+{
+    required uint32 user_id = 1;
+    required uint32 shield_status = 2;
+    optional bytes attach_data = 17;
+}
+
+message PushShieldSA
+{
+    required uint32 user_id = 1;
+    required uint32 result_code = 2;
+    optional uint32 shield_status = 3;
+    optional bytes attach_data = 17;
+}
+
+message PushShieldQ
+{
+    required uint32 user_id = 1;
+    optional bytes attach_data = 17;
+}
+
+message PushShieldA
+{
+    required uint32 user_id = 1;
+    required uint32 result_code = 2;
+    optional uint32 shield_status = 3;
+    optional bytes attach_data = 17;
+}
+
+message StopReceive
+{
+	required uint32 result = 1;
+}
+
+message UserLoginValidQ
+{
+	required string user_name = 1;
+	required string password = 2;
+	optional bytes attach_data = 17;
+}
+
+message UserLoginValidA
+{
+	required string user_name = 1;
+	required uint32 result_code = 2;
+	optional string result_string = 3;
+	optional MBCAF.Proto.UserInfo user_info = 4;
+	optional bytes attach_data = 17;
+}
+
+message ServerPrimaryS
+{
+	required uint32 master = 1;
+}
+
+message ObjectConnectInfo
+{
+	repeated MBCAF.Proto.ServerObjectState user_stat_list = 1;
+}
+
+message ObjectConnectState
+{
+	required uint32 user_status = 1;
+	required uint32 user_id = 2;
+	required MBCAF.Proto.ClientType client_type = 3;
+}
+
+message ServerUserCount
+{
+	required uint32 user_action = 1;
+	required uint32 user_id = 2;
+}
+
+message LoginStateNotify
+{
+	required uint32 user_id = 1;
+	required uint32 login_status = 2;
+}
+
+message UserPushQ
+{
+	required string flash = 1;
+	required string data = 2;
+	repeated MBCAF.Proto.UserTokenInfo user_token_list = 3;
+}
+
+message UserPushA
+{
+	repeated MBCAF.Proto.PushResult push_result_list = 1;
+}
+
+message GroupShieldQ
+{
+	required uint32 group_id = 1;
+	repeated uint32 user_id = 2;
+	optional bytes attach_data = 17;
+}
+
+message GroupShieldA
+{
+	required uint32 group_id = 1;
+	repeated MBCAF.Proto.ShieldStatus shield_status_list = 2;
+	optional bytes attach_data = 17;
+}
+

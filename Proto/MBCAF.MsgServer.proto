@@ -1,0 +1,368 @@
+syntax = "proto2";
+package MBCAF.MsgServer;
+import "MBCAF.Proto.proto";
+option optimize_for = LITE_RUNTIME;
+option java_package = "com.MBCAF.protobuf";
+option java_outer_classname="MsgServer";
+
+message MessageP2P
+{
+	required uint32 from_user_id = 1;
+	required uint32 to_user_id = 2;
+	required string cmd_msg_data = 3;
+}
+
+message MessageData
+{
+	required uint32 from_user_id = 1;
+	required uint32 to_session_id = 2;
+	required uint32 msg_id = 3;
+	required uint32 create_time = 4; 
+	required MBCAF.Proto.MessageType msg_type = 5;
+	required bytes msg_data = 6;
+	optional bytes attach_data = 20;
+}
+
+message MessageRead
+{
+	required uint32 user_id = 1;
+	required uint32 session_id = 2;		
+	required uint32 msg_id = 3;
+	required MBCAF.Proto.SessionType session_type = 4;
+}
+
+message MessageSendA
+{
+	required uint32 user_id = 1;
+	required uint32 session_id = 2;				
+	required uint32 msg_id = 3;
+	required MBCAF.Proto.SessionType session_type = 4;
+}
+
+message MessageReadA
+{
+	required uint32 user_id = 1;
+	required uint32 session_id = 2;			
+	required uint32 msg_id = 3;
+	required MBCAF.Proto.SessionType session_type = 4;
+}
+
+message ClientTimeQ
+{
+}
+
+message ClientTimeA
+{
+	required uint32 server_time = 1;
+}
+
+message MessageUnreadCntQ
+{
+	required uint32 user_id = 1;
+	optional bytes attach_data = 20;	
+}
+
+message MessageUnreadCntA
+{
+	required uint32 user_id = 1;
+	required uint32 total_cnt = 2;
+	repeated MBCAF.Proto.UnreadInfo unreadinfo_list = 3;
+	optional bytes attach_data = 20;
+}
+
+message MessageInfoListQ
+{
+	required uint32 user_id = 1;
+	required MBCAF.Proto.SessionType session_type = 2;
+	required uint32 session_id = 3;
+	required uint32 msg_id_begin = 4;
+	required uint32 msg_cnt = 5;
+	optional bytes attach_data = 20;
+}
+
+message MessageInfoListA
+{
+	required uint32 user_id = 1;
+	required MBCAF.Proto.SessionType session_type = 2;
+	required uint32 session_id = 3;
+	required uint32 msg_id_begin = 4;
+	repeated MBCAF.Proto.MsgInfo msg_list = 5;
+	optional bytes attach_data = 20;
+}
+
+message MessageRecentQ
+{
+	required uint32 user_id = 1;
+	required MBCAF.Proto.SessionType session_type = 2;
+	required uint32 session_id = 3;
+	optional bytes attach_data = 20;
+}
+
+message MessageRecentA
+{
+	required uint32 user_id = 1;
+	required MBCAF.Proto.SessionType session_type = 2;
+	required uint32 session_id = 3;
+	required uint32 latest_msg_id = 4;
+	optional bytes attach_data = 20;
+}
+
+message MessageInfoByIdQ
+{
+	required uint32 user_id = 1;
+	required MBCAF.Proto.SessionType session_type = 2;
+	required uint32 session_id = 3; 
+	repeated uint32 msg_id_list = 4;
+	optional bytes attach_data = 20;
+}
+
+message MessageInfoByIdA
+{
+	required uint32 user_id = 1;
+	required MBCAF.Proto.SessionType session_type = 2;
+	required uint32 session_id = 3;
+	repeated MBCAF.Proto.MsgInfo msg_list = 4;
+	optional bytes attach_data = 20;
+}
+
+message GroupListQ
+{
+	required uint32 user_id = 1;
+	optional bytes attach_data = 20;
+}
+
+message GroupListA
+{
+	required uint32 user_id = 1;
+	repeated MBCAF.Proto.GroupVersionInfo group_version_list = 2;
+	optional bytes attach_data = 20;
+}
+
+message GroupInfoListQ
+{
+	required uint32 user_id = 1;
+	repeated MBCAF.Proto.GroupVersionInfo group_version_list = 2;
+	optional bytes attach_data = 20;
+}
+
+message GroupInfoListA
+{
+	required uint32 user_id = 1;
+	repeated MBCAF.Proto.GroupInfo group_info_list = 2;
+	optional bytes attach_data = 20;
+}
+
+message GroupCreateQ
+{
+	required uint32 user_id = 1;
+	required MBCAF.Proto.GroupType group_type = 2 [default = GROUP_TYPE_TMP];
+	required string group_name = 3;
+	required string group_avatar = 4;
+	repeated uint32 member_id_list = 5;
+	optional bytes attach_data = 20;
+}
+
+message GroupCreateA
+{
+	required uint32 user_id = 1;
+	required uint32 result_code = 2;
+	optional uint32 group_id = 3;
+	required string group_name = 4;
+	repeated uint32 user_id_list = 5;
+	optional bytes attach_data = 20;
+}
+
+message GroupMemberSQ
+{
+	required uint32 user_id = 1;
+	required MBCAF.Proto.GroupModifyType change_type = 2;
+	required uint32 group_id = 3;
+	repeated uint32 member_id_list = 4;
+	optional bytes attach_data = 20;
+}
+
+message GroupMemberSA
+{
+	required uint32 user_id = 1;
+	required MBCAF.Proto.GroupModifyType change_type = 2;
+	required uint32 result_code = 3;
+	required uint32 group_id = 4;
+	repeated uint32 cur_user_id_list = 5;
+	repeated uint32 chg_user_id_list = 6;
+	optional bytes attach_data = 20;
+}
+
+message GroupShieldSQ
+{
+	required uint32 user_id = 1;
+	required uint32 group_id = 2;
+	required uint32 shield_status = 3;
+	optional bytes attach_data = 20;
+}
+
+message GroupShieldSA
+{
+	required uint32 user_id = 1;
+	required uint32 group_id = 2;
+	required uint32 result_code = 3;
+	optional bytes attach_data = 20;
+}
+
+message GroupMemberNotify
+{
+	required uint32 user_id = 1;
+	required MBCAF.Proto.GroupModifyType change_type = 2;
+	required uint32 group_id = 3;
+	repeated uint32 cur_user_id_list = 4;
+	repeated uint32 chg_user_id_list = 5;
+}
+
+message RecentSessionQ
+{
+	required uint32 user_id = 1;
+	required uint32 latest_update_time = 2;
+	optional bytes attach_data = 20;
+}
+
+message RecentSessionA
+{
+	required uint32 user_id = 1;
+	repeated MBCAF.Proto.ContactSessionInfo contact_session_list = 2;
+	optional bytes attach_data = 20;
+}
+
+message BubbyLoginStateNotify
+{
+	required MBCAF.Proto.ObjectState user_stat = 1;
+}
+
+message UserInfoListQ
+{
+	required uint32 user_id = 1;
+	repeated uint32 user_id_list = 2;
+	optional bytes attach_data = 20;
+}
+
+message UserInfoListA
+{
+	required uint32 user_id = 1;
+	repeated MBCAF.Proto.UserInfo user_info_list = 2;
+	optional bytes attach_data = 20;
+}
+
+message RemoveSessionQ
+{
+	required uint32 user_id = 1;
+	required MBCAF.Proto.SessionType session_type = 2;
+	required uint32 session_id = 3;
+	optional bytes attach_data = 20;
+}
+
+message RemoveSessionA
+{
+	required uint32 user_id = 1;
+	required uint32 result_code = 2;
+	required MBCAF.Proto.SessionType session_type = 3;
+	required uint32 session_id = 4;
+	optional bytes attach_data = 20;
+}
+
+message RemoveSessionNotify
+{
+ 	required uint32 user_id = 1;
+	required MBCAF.Proto.SessionType session_type = 2;
+	required uint32 session_id = 3;
+}
+
+message VaryUserInfoListQ
+{
+	required uint32 user_id = 1;
+	required uint32 latest_update_time = 2;
+	optional bytes attach_data = 20;
+}
+
+message VaryUserInfoListA
+{
+	required uint32 user_id = 1;
+	required uint32 latest_update_time = 2;
+	repeated MBCAF.Proto.UserInfo user_list = 3;		
+	optional bytes attach_data = 20;
+}
+
+message BuddyObjectStateQ
+{
+	required uint32 user_id = 1;
+	repeated uint32 user_id_list = 2;
+	optional bytes attach_data = 20;
+}
+
+message BuddyObjectStateA
+{
+	required uint32 user_id = 1;
+	repeated MBCAF.Proto.ObjectState user_stat_list = 2;
+	optional bytes attach_data = 20;
+}
+
+message UserAvatarSQ
+{
+	required uint32 user_id = 1;
+	required string avatar_url = 2;
+	optional bytes attach_data = 20;
+}
+
+message UserAvatarSA
+{
+	required uint32 user_id = 1;
+	required uint32 result_code = 2;
+	optional bytes attach_data = 20;
+}
+
+message UserAvatarNotifyS 
+{
+    required uint32 changed_user_id = 1;
+    required string avatar_url = 2;
+}
+
+message PCLoginStateNotify
+{
+	required uint32 user_id = 1;
+	required MBCAF.Proto.ObjectStateType login_stat = 2;
+}
+
+message VaryDepartListQ
+{
+	required uint32 user_id = 1;
+	required uint32 latest_update_time = 2;
+	optional bytes attach_data = 20;
+}
+
+message VaryDepartListA
+{
+	required uint32 user_id = 1;
+	required uint32 latest_update_time = 2;
+	repeated MBCAF.Proto.DepartInfo dept_list = 3;
+	optional bytes attach_data = 20;
+}
+
+message SignInfoSQ
+{
+    required uint32 user_id = 1;
+    required string sign_info = 2;
+    optional bytes attach_data = 20;
+}
+
+message SignInfoSA
+{
+    required uint32 user_id = 1;
+    required uint32 result_code = 2;
+    optional string sign_info = 3;
+    optional bytes attach_data = 20;
+}
+
+message SignInfoNotifyS 
+{
+    required uint32 changed_user_id = 1;
+    required string sign_info = 2;
+}
+
+
