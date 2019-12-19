@@ -213,7 +213,7 @@ namespace Mdf
         {
             mMsgType = cmdid >> 8;
             mMsgID = cmdid & 0xFF;
-            MemStream::write(mData + 4, msgid);
+            MemStream::write(mData + 4, cmdid);
         }
 
         /**
