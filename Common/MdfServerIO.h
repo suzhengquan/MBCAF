@@ -312,8 +312,8 @@ namespace Mdf
 		ACE_Reactor * mReactor;
 		SocketServerPrc * mIOPrc;
 		ACE_SOCK_Stream mStream;
-        ST_Mbool mAbort;
-		ST_Mbool mStop;
+        MSTbool mAbort;
+		MSTbool mStop;
 		SPrcCB mMsgPrc;
         String mIP;
         String mLocalIP;

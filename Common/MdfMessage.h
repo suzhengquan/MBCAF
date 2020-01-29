@@ -109,7 +109,7 @@ namespace Mdf
         */
         virtual Message * create(Mui8 * buf, Mui32 len) const;
     protected:
-        /*
+        /**
         @version 0.9.1
         */
         void enlarge(MCount cnt);
@@ -251,7 +251,7 @@ namespace Mdf
         /**
         @version 0.9.1
         */
-        virtual void setProto(const google::protobuf::MessageLite * msg);
+        virtual void setProto(const google::protobuf::MessageLite * in);
 
         /**
         @version 0.9.1

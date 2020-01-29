@@ -120,6 +120,7 @@ namespace Mdf
 		Mui32 mIndex;
 		int mTGroup;
 		MCount mCount;
+        MSTCount mExitCount;
 		ACE_thread_t * mTID;
 		ACE_hthread_t * mTHandle;
 		ACE_Thread_Mutex mMutex;

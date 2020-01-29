@@ -112,13 +112,6 @@ using namespace std;
 typedef int socklen_t;
 #else
 typedef int	SOCKET;
-typedef int bool;
-#ifndef  __APPLE__
-	const int TRUE = 1;
-	const int FALSE = 0;
-#endif
-const int SOCKET_ERROR = -1;
-const int INVALID_SOCKET = -1;
 #endif
 
 #define M_AtomicAdd(src_ptr, v)				(void)__sync_add_and_fetch(src_ptr, v)
@@ -126,11 +119,6 @@ const int INVALID_SOCKET = -1;
 #define M_AtomicSubFetch(src_ptr, v)		__sync_sub_and_fetch(src_ptr, v)
 #define M_AtomicFetch(src_ptr)				__sync_add_and_fetch(src_ptr, 0)
 #define M_AtomicSet(src_ptr, v)				(void)__sync_bool_compare_and_swap(src_ptr, *(src_ptr), v)
-
-typedef  volatile long atomic_t;
-
-typedef int net_handle_t;
-typedef int conn_handle_t;
 
 #include <ace/config-lite.h>
 #include <ace/Time_Value.h>
@@ -230,7 +218,8 @@ namespace Mdf
     typedef ACE_UINT64		TimeDurUS;
 	typedef char            utf8;
 
-	typedef ACE_Atomic_Op<ACE_Thread_Mutex, bool> ST_Mbool;
+	typedef ACE_Atomic_Op<ACE_Thread_Mutex, bool>   MSTbool;
+    typedef ACE_Atomic_Op<ACE_Thread_Mutex, MCount> MSTCount;
 
     static const int BASE = 0x100000;
 

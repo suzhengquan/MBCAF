@@ -32,18 +32,18 @@ namespace Mdf
 	class LambdaTask : public Mdf::ThreadMain
 	{
 	public:
-		LambdaTask(std::function<void()> operationRun) :
-			m_operationRun(operationRun)
+		LambdaTask(std::function<void()> func) :
+			mFunc(func)
 		{
 		}
 
 		virtual void run()
 		{
-			m_operationRun();
+			mFunc();
 		}
 
 	private:
-		std::function<void()> m_operationRun;
+		std::function<void()> mFunc;
 	};
 	//--------------------------------------------------------------------------
 	//--------------------------------------------------------------------------
@@ -89,6 +89,7 @@ namespace Mdf
     //--------------------------------------------------------------------------
 	Thread::Thread(MCount cnt) :
 		mCount(cnt),
+        mExitCount(0),
 		mCondition(mMutex),
 		mExitCondition(mExitMutex),
 		mTGroup(-1)
@@ -128,13 +129,16 @@ namespace Mdf
 	//--------------------------------------------------------------------------
 	void Thread::destroy()
 	{
+        mCondition.lock(); 
 		ACE_Thread_Manager::instance()->cancel_grp(mTGroup);
+		mCondition.signalAll();
 
-		mCondition.signal();
-
-		mExitCondition.wait();
-
-		mCondition.lock();
+        mExitCondition.lock();
+        while(mExitCount < mCount)
+            mExitCondition.wait();
+        mExitCount = 0;
+        mExitCondition.unlock();
+        
 		std::list<ThreadMain *>::iterator i, iend = mList.end();
 		for (i = mList.begin(); i != iend; ++i)
 		{
@@ -171,7 +175,10 @@ namespace Mdf
 			}
 			delete m;
 		}
-		temp->mExitCondition.signal();
+        temp->mExitCondition.lock();
+        ++temp->mExitCount;
+		temp->mExitCondition.signalAll();
+        temp->mExitCondition.unlock();
 		return 0;
 	}
 	//--------------------------------------------------------------------------
@@ -179,9 +186,9 @@ namespace Mdf
 	{
 		mCondition.lock();
 		mList.push_back(task);
+        mCondition.signal();
 		mCondition.unlock();
 
-		mCondition.signal();
 		return true;
 	}
 	//--------------------------------------------------------------------------
@@ -192,9 +199,9 @@ namespace Mdf
 
 		mCondition.lock();
 		mList.push_back(task);
+		mCondition.signal();        
 		mCondition.unlock();
-
-		mCondition.signal();
+        
 		return true;
 	}
 	//--------------------------------------------------------------------------

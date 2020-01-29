@@ -149,9 +149,9 @@ namespace Mdf
 
     }
     //-----------------------------------------------------------------------
-    void Message::setProto(const google::protobuf::MessageLite * msg)
+    void Message::setProto(const google::protobuf::MessageLite * in)
     {
-        Mui32 msgsize = msg->ByteSize();
+        Mui32 msgsize = in->ByteSize();
 
         if (mData && mCopyData)
         {
@@ -170,7 +170,7 @@ namespace Mdf
             mData = (Mui8 *)malloc(mAllocSize);
         }
 
-        if (!msg->SerializeToArray(mData, msgsize))
+        if (!in->SerializeToArray(mData, msgsize))
         {
             Mlog("pb msg miss required fields.");
         }

@@ -314,8 +314,8 @@ namespace Mdf
     protected:
         ACE_Reactor * mReactor;
         SocketClientPrc * mIOPrc;
-        ST_Mbool mAbort;
-        ST_Mbool mStop;
+        MSTbool mAbort;
+        MSTbool mStop;
         CPrcCB mMsgPrc;
         String mIP;
         String mLocalIP;
