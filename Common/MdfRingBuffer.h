@@ -84,5 +84,61 @@ namespace Mdf
         Mui32 mAllocSize;
         mutable Mui32 mWriteSize;
     };
+    
+    /**
+    @version 0.9.1
+    */
+    class RingLoopBuffer
+    {
+    public:
+        RingLoopBuffer();
+        ~RingLoopBuffer();
+
+        /**
+        @version 0.9.1
+        */
+        inline Mui32 getAllocSize() const { return mAllocSize; }
+
+        /**
+        @version 0.9.1
+        */
+        inline Mui32 getWriteSize() const { return mWriteSize; }
+
+        /**
+        @version 0.9.1
+        */
+        inline Mui32 getRemainSize() const { return mAllocSize - mWriteSize; }
+
+        /**
+        @version 0.9.1
+        */
+        bool alloc(Mui32 nsize);
+
+        /**
+        @version 0.9.1
+        */
+        void free();
+
+        /**
+        @version 0.9.1
+        */
+        Mui32 write(const void * in, int size);
+
+        /**
+        @version 0.9.1
+        */
+        Mui32 read(void * out, int size) const;
+
+        /**
+        @version 0.9.1
+        */
+        Mui32 peek(void * out, int size) const;
+    private:
+        Mui8 * mData;
+        Mui32 mAllocSize;
+        mutable Mui32 mWriteSize;
+        mutable Mui32 mHead;
+        Mui32 mTail;
+    };
 }
 #endif
