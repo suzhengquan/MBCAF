@@ -48,7 +48,7 @@ namespace Mdf
         /**
         @version 0.9.1
         */
-        int init(const String & certfile = NULL, const String & keyfile = NULL, const String & keypw = NULL);
+        int init(const String & certfile = "", const String & keyfile = "", const String & keypw = “”);
 
         /**
         @version 0.9.1

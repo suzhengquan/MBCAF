@@ -45,11 +45,6 @@ namespace Mdf
         virtual ~SSLServerPrc();
 
         /**
-        @version 0.9.1 avd
-        */
-        inline void setSSLCTX(SSL_CTX * ctx) { mSSLctx = ctx; }
-
-        /**
         @version 0.9.1
         */
         inline SSL_CTX * getSSLCTX() const { return mSSLctx; }
@@ -80,6 +75,13 @@ namespace Mdf
         virtual int handle_close(ACE_HANDLE, ACE_Reactor_Mask);
     protected:
         SSLServerPrc();
+        
+        Mi32 connectSSL();
+        
+        /**
+        @version 0.9.1 avd
+        */
+        inline void setSSLCTX(SSL_CTX * ctx) { mSSLctx = ctx; }
     protected:
         SSL * mSSL;
         SSL_CTX * mSSLctx;

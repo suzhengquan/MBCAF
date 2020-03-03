@@ -31,30 +31,30 @@ namespace Mdf
 {
     //-----------------------------------------------------------------------
     SSLAcceptPrc::SSLAcceptPrc():
-        SocketAcceptPrc()
+        SocketAcceptPrc(),
+        mSSLctx(0)
     {
-        mSSLctx = NULL;
     }
     //-----------------------------------------------------------------------
 	SSLAcceptPrc::SSLAcceptPrc(SocketServerPrc * ioPrc,
 		const String & ip, Mui16 port, ACE_Reactor * tor) :
         ACE_Event_Handler(),
         mReactor(tor ? tor : ACE_Reactor::instance()),
+        mSSLctx(0),
         mPattern(ioPrc),
 		mIP(ip),
 		mPort(port)
     {
-        mSSLctx = NULL;
         M_Trace("SSLAcceptPrc::SSLAcceptPrc(ACE_Reactor *)");
     }
     //-----------------------------------------------------------------------
 	SSLAcceptPrc::~SSLAcceptPrc()
     {
-		if (mPattern)
-		{
-			delete mPattern;
-			mPattern = 0;
-		}
+        if (mSSLctx)
+        {
+            SSL_CTX_free(mSSLctx);
+            mSSLctx = 0;
+        }
         M_Trace("SSLAcceptPrc::~SSLAcceptPrc()");
     }
     //-----------------------------------------------------------------------
@@ -64,6 +64,8 @@ namespace Mdf
         mKeyFile = keyfile;
         mKeyPW = keypw;
 
+        SSLeay_add_ssl_algorithms();
+        
         mSSLctx = SSL_CTX_new(SSLv23_client_method());
         if (mSSLctx)
         {
@@ -143,7 +145,7 @@ namespace Mdf
         M_Trace("SSLAcceptPrc::handle_input(ACE_HANDLE)");
 
         ACE_INET_Addr clientAddr;
-		SocketServerPrc * temp = mPattern->createInstance(mReactor);
+		SSLServerPrc * temp = static_cast<SSLServerPrc *>(mPattern->createInstance(mReactor));
 		ServerIO * base = temp->getBase();
         temp->setSSLCTX(mSSLctx);
         if(mAcceptor.accept(*base->getStream(), &clientAddr) == -1)
@@ -182,7 +184,7 @@ namespace Mdf
         if (mSSLctx)
         {
             SSL_CTX_free(mSSLctx);
-            mSSLctx = NULL;
+            mSSLctx = 0;
         }
 
         delete this;

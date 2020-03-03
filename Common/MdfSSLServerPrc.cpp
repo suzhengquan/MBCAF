@@ -71,10 +71,20 @@ namespace Mdf
 	SSLServerPrc::~SSLServerPrc()
     {
         M_Trace("SSLServerPrc::~SSLServerPrc()");
-        if(mBase)
+        if (mSSL)
         {
-            delete mBase;
-			mBase = 0;
+            Mi32 re = SSL_shutdown(mSSL);
+            if (re <= 0)
+            {
+                Mi32 nErrorCode = SSL_get_error(mSSL, re);
+                MlogWarning("ssl shutdown not finished, errno: %d.", nErrorCode);
+            }
+            else if (re == 1)
+            {
+                Mlog("ssl shutdown successed.");
+            }
+            SSL_free(mSSL);
+            mSSL = 0;
         }
     }
 	//-----------------------------------------------------------------------
@@ -87,59 +97,8 @@ namespace Mdf
 		return re;
 	}
     //-----------------------------------------------------------------------
-	Mi32 SSLServerPrc::send(void * data, MCount cnt)
-    {
-		if(mBase->isStop())
-		{
-			return 0;
-		}
-
-        ACE_Message_Block * block = 0;
-        ACE_NEW_RETURN(block, ACE_Message_Block(cnt), -1);
-        ACE_Time_Value nowait(ACE_OS::gettimeofday());
-        {
-            ScopeLock tlock(mOutMute);
-            if (mOutQueue.enqueue_tail(block, &nowait) == -1)//autowakeupwrite
-            {
-                MlogError(ACE_TEXT("(%P|%t) %p; discarding data\n"), ACE_TEXT("enqueue failed"));
-                block->release();
-                return 0;
-            }
-        }
-        return cnt;
-    }
-    //-----------------------------------------------------------------------
     int SSLServerPrc::handle_connect()
     {
-        if (mReactor->register_handler(this, READ_MASK | EXCEPT_MASK) == -1)
-            MlogErrorReturn(logError(ACE_TEXT("%N:%l: Failed to register ")
-                ACE_TEXT("read handler. (errno = %i: %m)\n"), ACE_ERRNO_GET), -1);
-
-        mStrategy.reactor(mReactor);
-        mOutQueue.notification_strategy(&mStrategy);
-
-        bool nodelay = true;
-        mBase->getStream()->enable(ACE_NONBLOCK);
-        mBase->getStream()->set_option(IPPROTO_TCP, TCP_NODELAY, &nodelay, sizeof(nodelay));
-
-        ACE_INET_Addr tmpaddr;
-        size_t addrsize = 1;
-        ACE_SOCK_SEQPACK_Association ssa(mBase->getStream()->get_handle());
-
-        ssa.get_local_addrs(&tmpaddr, addrsize); // local
-#if _UNICODE
-        mBase->setLocalIP(StrUtil::s2ws(tmpaddr.get_host_addr()), tmpaddr.get_port_number());
-#else
-        mBase->setLocalIP(tmpaddr.get_host_addr(), tmpaddr.get_port_number());
-#endif
-
-        addrsize = 1;
-        ssa.get_remote_addrs(&tmpaddr, addrsize); // remote
-#if _UNICODE
-        mBase->setIP(StrUtil::s2ws(tmpaddr.get_host_addr()), tmpaddr.get_port_number());
-#else
-        mBase->setIP(tmpaddr.get_host_addr(), tmpaddr.get_port_number());
-#endif
         mSSL = SSL_new(mSSLctx);
         if (NULL == mSSL)
         {
@@ -163,10 +122,7 @@ namespace Mdf
 
         connectSSL();
 
-        mBase->mStop = false;
-        mBase->onConnect();
-
-        return 0;
+        return SocketServerPrc::handle_connect();
     }
     //-----------------------------------------------------------------------
 	int SSLServerPrc::handle_input(ACE_HANDLE)
@@ -368,7 +324,7 @@ namespace Mdf
         {
             Mi32 ecode = SSL_get_error(mSSL, re);
             if (SSL_ERROR_WANT_READ == ecode || SSL_ERROR_WANT_WRITE == ecode)
-            {
+            {//try again
                 MlogWarning("ssl connect is blocking, remote ip: %s, port: %d, error code: %d.",
                     GetRemoteIP(), GetRemotePort(), ecode);
             }

@@ -77,10 +77,14 @@ namespace Mdf
     //-----------------------------------------------------------------------
     int SSLClientPrc::init(const String & certfile, const String & keyfile, const String & keypw)
     {
+        if(mSSLctx)
+            return 0;
         mCertFile = certfile;
         mKeyFile = keyfile;
         mKeyPW = keypw;
 
+        SSLeay_add_ssl_algorithms();
+        
         mSSLctx = SSL_CTX_new(SSLv23_client_method());
         if (mSSLctx)
         {
@@ -140,33 +144,8 @@ namespace Mdf
 		return re;
 	}
     //-----------------------------------------------------------------------
-    int SSLClientPrc::open(void * = 0)
+    int SSLClientPrc::open(void * p)
     {
-        if (Parent::open(p) == -1)
-            return -1;
-
-        mStrategy.reactor(reactor());
-        msg_queue()->notification_strategy(&mStrategy);
-
-        ACE_INET_Addr tmpaddr;
-        size_t addrsize = 1;
-        ACE_SOCK_SEQPACK_Association ssa(peer().get_handle());
-
-        ssa.get_local_addrs(&tmpaddr, addrsize); // local
-#if _UNICODE
-        mBase->setLocalIP(StrUtil::s2ws(tmpaddr.get_host_addr()), tmpaddr.get_port_number());
-#else
-        mBase->setLocalIP(tmpaddr.get_host_addr(), tmpaddr.get_port_number());
-#endif
-
-        addrsize = 1;
-        ssa.get_remote_addrs(&tmpaddr, addrsize); // remote
-#if _UNICODE
-        mBase->setIP(StrUtil::s2ws(tmpaddr.get_host_addr()), tmpaddr.get_port_number());
-#else
-        mBase->setIP(tmpaddr.get_host_addr(), tmpaddr.get_port_number());
-#endif
-
         SSL_set_mode(mSSL, SSL_MODE_AUTO_RETRY);
         if (SSL_set_fd(mSSL, peer().get_handle()) != 1)
         {
@@ -175,10 +154,7 @@ namespace Mdf
         }
         connectSSL();
 
-        mBase->mStop = false;
-        mBase->onConfirm();
-
-        return 0;
+        return SocketClientPrc::open(p);
     }
 	//-----------------------------------------------------------------------
 	int SSLClientPrc::handle_input(ACE_HANDLE)
