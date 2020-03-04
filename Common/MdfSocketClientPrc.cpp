@@ -123,7 +123,6 @@ namespace Mdf
 		if(Parent::open(p) == -1)
 			return -1;
 
-		//mStrategy.reactor(reactor());
 		msg_queue()->notification_strategy(&mStrategy);
 
         ACE_INET_Addr tmpaddr;
@@ -220,14 +219,15 @@ namespace Mdf
 
     ContinueTransmission:
 		ACE_Message_Block * mb = 0;
-		ACE_Time_Value nowait(ACE_OS::gettimeofday());
-		while (-1 != getq(mb, &nowait))
+		//ACE_Time_Value nowait(ACE_OS::gettimeofday());
+		while (-1 != getq(mb))
 		{
 			ssize_t dsedsize = peer().send(mb->rd_ptr(), mb->length());
 			if (dsedsize <= 0)
 			{
 				if (ACE_OS::last_error() != EWOULDBLOCK)
 				{
+                    mb->release();
 					INVOCATION_RETURN(-1);
 				}
 				else

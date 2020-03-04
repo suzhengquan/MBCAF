@@ -152,7 +152,8 @@ namespace Mdf
             MlogError("ssl set fd failed");
             return -1;
         }
-        connectSSL();
+        if(connectSSL() == -1)
+            return -1;
 
         return SocketClientPrc::open(p);
     }
@@ -239,8 +240,8 @@ namespace Mdf
 
     ContinueTransmission:
 		ACE_Message_Block * mb = 0;
-		ACE_Time_Value nowait(ACE_OS::gettimeofday());
-		while (-1 != getq(mb, &nowait))
+		//ACE_Time_Value nowait(ACE_OS::gettimeofday());
+		while (-1 != getq(mb))
 		{
 			ssize_t dsedsize = SSL_write(mSSL, mb->rd_ptr(), mb->length());
             if (dsedsize < 0)
@@ -253,6 +254,7 @@ namespace Mdf
                 }
                 else
                 {
+                    mb->release();
                     MlogError("send ssl data error, errno: %d.", ecode);
                     INVOCATION_RETURN(-1);
                 }
@@ -268,6 +270,7 @@ namespace Mdf
                 {
                     MlogError("send ssl data error, errno: %d.", ecode);
                 }
+                mb->release();
                 INVOCATION_RETURN(-1);
             }
 			else

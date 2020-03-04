@@ -120,7 +120,8 @@ namespace Mdf
             return -1;
         }
 
-        connectSSL();
+        if(connectSSL() == -1)
+            return -1;
 
         return SocketServerPrc::handle_connect();
     }
@@ -207,8 +208,8 @@ namespace Mdf
 
     ContinueTransmission:
         ACE_Message_Block * mb = 0;
-        ACE_Time_Value nowait(ACE_OS::gettimeofday());
-        while (0 <= mOutQueue.dequeue_head(mb, &nowait))
+        //ACE_Time_Value nowait(ACE_OS::gettimeofday());
+        while (0 <= mOutQueue.peek_dequeue_head(mb))
         {
             int sedsize = mb->length();
             if(sedsize > M_SocketOutSize)
@@ -222,7 +223,6 @@ namespace Mdf
                 Mi32 ecode = SSL_get_error(mSSL, dsedsize);
                 if (SSL_ERROR_WANT_WRITE == ecode || SSL_ERROR_WANT_READ == ecode)
                 {
-                    mOutQueue.enqueue_head(mb);
                     break;
                 }
                 else
@@ -248,12 +248,12 @@ namespace Mdf
             {
                 mb->rd_ptr((size_t)dsedsize);
             }
-            if (mb->length() > 0)
+            if (mb->length() <= 0)
             {
-                mOutQueue.enqueue_head(mb);
+                mOutQueue.dequeue_head(mb);
+                mb->release();
                 break;
             }
-            mb->release();
 			mSendMark = M_Only(ConnectManager)->getTimeTick();
         }
 

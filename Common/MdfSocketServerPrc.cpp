@@ -114,10 +114,10 @@ namespace Mdf
 
         ACE_Message_Block * block = 0;
         ACE_NEW_RETURN(block, ACE_Message_Block(cnt), -1);
-        ACE_Time_Value nowait(ACE_OS::gettimeofday());
+        //ACE_Time_Value nowait(ACE_OS::gettimeofday());
         {
             ScopeLock tlock(mOutMute);
-            if (mOutQueue.enqueue_tail(block, &nowait) == -1)//autowakeupwrite
+            if (mOutQueue.enqueue_tail(block) == -1)//autowakeupwrite
             {
                 MlogError(ACE_TEXT("(%P|%t) %p; discarding data\n"), ACE_TEXT("enqueue failed"));
                 block->release();
@@ -234,8 +234,8 @@ namespace Mdf
 
     ContinueTransmission:
         ACE_Message_Block * mb = 0;
-        ACE_Time_Value nowait(ACE_OS::gettimeofday());
-        while (0 <= mOutQueue.dequeue_head(mb, &nowait))
+        //ACE_Time_Value nowait(ACE_OS::gettimeofday());
+        while (0 <= mOutQueue.peek_dequeue_head(mb))
         {
             int sedsize = mb->length();
             if(sedsize > M_SocketOutSize)
@@ -252,7 +252,6 @@ namespace Mdf
 				}
                 else
                 {
-                    mOutQueue.enqueue_head(mb);
                     break;
                 }
             }
@@ -260,12 +259,12 @@ namespace Mdf
             {
                 mb->rd_ptr((size_t)dsedsize);
             }
-            if (mb->length() > 0)
+            if (mb->length() <= 0)
             {
-                mOutQueue.enqueue_head(mb);
+                mOutQueue.dequeue_head(mb);
+                mb->release();
                 break;
             }
-            mb->release();
 			mSendMark = M_Only(ConnectManager)->getTimeTick();
         }
 
