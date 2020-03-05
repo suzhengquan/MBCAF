@@ -81,7 +81,7 @@ namespace Mdf
         const string & gKeyPassword() const { return mKeyPW; }
 
         /// @copydetails SocketServerPrc::createInstance
-		virtual SSLClientPrc * createInstance() const;
+		virtual SSLClientPrc * createInstance(ACE_Reactor * tor) const;
 
         /// @copydetails ACE_Svc_Handler::open
         virtual int open(void * = 0);

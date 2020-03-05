@@ -86,6 +86,8 @@ namespace Mdf
             SSL_free(mSSL);
             mSSL = 0;
         }
+        
+        mSSLConnect = false;
     }
 	//-----------------------------------------------------------------------
 	SSLServerPrc * SSLServerPrc::createInstance(ACE_Reactor * tor) const

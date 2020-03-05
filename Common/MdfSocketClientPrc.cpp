@@ -87,9 +87,11 @@ namespace Mdf
 		M_Trace("SocketClientPrc::~SocketClientPrc()");
     }
 	//-----------------------------------------------------------------------
-	SocketClientPrc * SocketClientPrc::createInstance() const
+	SocketClientPrc * SocketClientPrc::createInstance(ACE_Reactor * tor) const
 	{
-		SocketClientPrc * re = new SocketClientPrc(mBase, reactor());
+        ClientIO * temp = mBase->createInstance();
+		SocketClientPrc * re = new SocketClientPrc(temp, tor);
+        temp->bind(re);
 		return re;
 	}
     //-----------------------------------------------------------------------

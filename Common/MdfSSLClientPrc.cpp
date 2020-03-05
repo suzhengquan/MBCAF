@@ -138,9 +138,11 @@ namespace Mdf
         return 0;
     }
 	//-----------------------------------------------------------------------
-	SSLClientPrc * SSLClientPrc::createInstance() const
+	SSLClientPrc * SSLClientPrc::createInstance(ACE_Reactor * tor) const
 	{
-		SSLClientPrc * re = new SSLClientPrc(mBase, reactor());
+        ClientIO * temp = mBase->createInstance();
+		SSLClientPrc * re = new SSLClientPrc(temp, tor);
+        temp->bind(re);
 		return re;
 	}
     //-----------------------------------------------------------------------

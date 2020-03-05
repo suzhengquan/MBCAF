@@ -45,7 +45,7 @@ namespace Mdf
 		/**
 		@version 0.9.1
 		*/
-		virtual SocketClientPrc * createInstance() const;
+		virtual SocketClientPrc * createInstance(ACE_Reactor * tor) const;
 
         /**
         @version 0.9.1
