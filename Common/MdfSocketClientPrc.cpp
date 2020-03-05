@@ -85,6 +85,11 @@ namespace Mdf
 	SocketClientPrc::~SocketClientPrc()
     {
 		M_Trace("SocketClientPrc::~SocketClientPrc()");
+        if(mBase)
+        {
+            delete mBase;
+			mBase = 0;
+        }
     }
 	//-----------------------------------------------------------------------
 	SocketClientPrc * SocketClientPrc::createInstance(ACE_Reactor * tor) const
