@@ -150,7 +150,7 @@ namespace Mdf
     class ServerConnect : public ServerIO
     {
     public:
-        ServerConnect();
+        ServerConnect(ACE_Reactor * tor);
         virtual ~ServerConnect();
 
         /**
@@ -203,24 +203,19 @@ namespace Mdf
         */
         Mui32 getOnlineState() const { return mOnlineState; }
 
-        /**
-        @version 0.9.1
-        */
+        /// @copydetails ServerIO::getType
+        Mui8 getType() const { return ServerType_Server; }
+        
+        /// @copydetails ServerIO::onConnect
         virtual void onConnect();
 
-        /**
-        @version 0.9.1
-        */
+        /// @copydetails ServerIO::onClose
         virtual void onClose();
 
-        /**
-        @version 0.9.1
-        */
+        /// @copydetails ServerIO::onTimer
         virtual void onTimer(TimeDurMS tick);
 
-        /**
-        @version 0.9.1
-        */
+        /// @copydetails ServerIO::onMessage
         virtual void onMessage(Message * msg);
 
         /**

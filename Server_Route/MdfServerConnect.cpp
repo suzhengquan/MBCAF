@@ -37,7 +37,8 @@ namespace Mdf
     typedef hash_map<Mui32, ObjConnectInfo *> ConnectInfoList;
     static ConnectInfoList gInfoList;
     //-----------------------------------------------------------------------
-    ServerConnect::ServerConnect()
+    ServerConnect::ServerConnect(ACE_Reactor * tor):
+        ServerIO(tor)
     {
         mPrimary = false;
     }
@@ -54,7 +55,6 @@ namespace Mdf
     //-----------------------------------------------------------------------
     void ServerConnect::onConnect()
     {
-        M_Only(ConnectManager)->addServerConnect(ServerType_Server, this);
         setTimer(true, 0, 1000);
     }
     //-----------------------------------------------------------------------
@@ -114,8 +114,6 @@ namespace Mdf
     //-----------------------------------------------------------------------
     void ServerConnect::onClose()
     {
-        M_Only(ConnectManager)->removeServerConnect(ServerType_Server, this);
-
         ConnectInfoList::iterator temp;
         ConnectInfoList::iterator it, itend = gInfoList.end();
         for(it = gInfoList.begin(); it != itend;)

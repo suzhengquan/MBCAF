@@ -45,6 +45,11 @@ namespace Mdf
         /**
         @version 0.9.1
         */
+        Mui8 getType() const{ return ClientType_Route; }
+        
+        /**
+        @version 0.9.1
+        */
         void connect(ACE_Reactor * react, const String & ip, uint16_t port);
 
         ///@copydetails ClientIO::onConfirm

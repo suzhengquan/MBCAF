@@ -38,9 +38,12 @@ namespace Mdf
     class ServerConnect : public ServerIO
     {
     public:
-        ServerConnect();
+        ServerConnect(ACE_Reactor * tor);
         virtual ~ServerConnect();
 
+        /// @copydetails ServerIO::getType
+        Mui8 getType() const { return ServerType_Server; }
+        
         ///@copydetails ServerIO::createInstance
         ServerIO * createInstance() const;
 
@@ -52,9 +55,6 @@ namespace Mdf
 
         ///@copydetails ServerIO::onMessage
         virtual void onMessage(Message * msg);
-
-        ///@copydetails ServerIO::onClose
-        virtual void onClose();
     protected:
         void prcHeartBeat(MdfMessage * msg);
 

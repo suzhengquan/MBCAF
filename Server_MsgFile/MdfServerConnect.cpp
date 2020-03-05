@@ -31,7 +31,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace Mdf
 {
     //-----------------------------------------------------------------------
-    ServerConnect::ServerConnect()
+    ServerConnect::ServerConnect(ACE_Reactor * tor) :
+        ServerIO(tor)
     {
     }
     //-----------------------------------------------------------------------
@@ -46,13 +47,7 @@ namespace Mdf
     //-----------------------------------------------------------------------
     void ServerConnect::onConnect()
     {
-        M_Only(ConnectManager)->addServerConnect(ServerType_Server, this);
         setTimer(true, 0, 1000);
-    }
-    //-----------------------------------------------------------------------
-    void ServerConnect::onClose()
-    {
-        M_Only(ConnectManager)->removeServerConnect(ServerType_Server, this);
     }
     //-----------------------------------------------------------------------
     void ServerConnect::onTimer(TimeDurMS curr_tick)

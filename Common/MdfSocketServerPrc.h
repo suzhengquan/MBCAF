@@ -72,12 +72,12 @@ namespace Mdf
 		*/
 		ACE_HANDLE getHandle() const;
 
-		/**
+		/** lastest send time(tick)
 		@version 0.9.1
 		*/
 		inline Mui64 getSendMark() const { return mSendMark; }
 
-		/**
+		/** lastest receive time(tick)
 		@version 0.9.1
 		*/
 		inline Mui64 getReceiveMark() const { return mReceiveMark; }
@@ -112,7 +112,9 @@ namespace Mdf
         RingBuffer mReceiveBuffer;
         Mui64 mSendMark;
         Mui64 mReceiveMark;
+    #ifdef _DEBUG
         int mDebugMark;
+    #endif
         bool mAutoDestroy;
     };
 }

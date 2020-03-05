@@ -41,8 +41,18 @@ namespace Mdf
     {
         friend class SocketServerPrc;
     public:
-		ServerIO(ACE_Reactor * tor);
+		ServerIO(ACE_Reactor * tor, Mui32 idx = 0);
         virtual ~ServerIO();
+        
+        /**
+        @version 0.9.1
+        */
+        virtual Mui8 getType const { return 1; }
+        
+        /**
+        @version 0.9.1
+        */
+        inline Mui32 getIndex() const { return mIndex; }
 
 		/**
 		@version 0.9.1
@@ -280,22 +290,22 @@ namespace Mdf
         /**
         @version 0.9.1
         */
-        virtual void onConnect();
+        virtual void onConnect(){}
 
         /**
         @version 0.9.1
         */
-        virtual void onClose();
+        virtual void onClose(){}
 
 		/**
 		@version 0.9.1
 		*/
-		virtual void onReceiveError();
+		virtual void onReceiveError(){}
 
         /**
         @version 0.9.1
         */
-        virtual void onTimer(TimeDurMS time);
+        virtual void onTimer(TimeDurMS time){}
 
         /**
         @version 0.9.1
@@ -305,12 +315,13 @@ namespace Mdf
         /**
         @version 0.9.1
         */
-        virtual void onException();
+        virtual void onException(){}
 	protected:
 		ServerIO() {}
     protected:
 		ACE_Reactor * mReactor;
 		SocketServerPrc * mIOPrc;
+        Mui32 mIndex;
 		ACE_SOCK_Stream mStream;
         MSTbool mAbort;
 		MSTbool mStop;

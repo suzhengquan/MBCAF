@@ -78,14 +78,19 @@ namespace Mdf
         }
     }
     //------------------------------------------------------------------------
-    LoginClientConnect::LoginClientConnect(Mui32 idx):
-        mIndex(idx)
+    LoginClientConnect::LoginClientConnect(ACE_Reactor * tor, Mui32 idx):
+        ClientConnect(tor, idx)
     {
     }
     //------------------------------------------------------------------------
     LoginClientConnect::~LoginClientConnect()
     {
 
+    }
+    //------------------------------------------------------------------------
+    Mui32 LoginClientConnect::getType() const
+    {
+        return ClientType_Login;
     }
     //------------------------------------------------------------------------
     void LoginClientConnect::connect(const char * ip, Mui16 serverPort, Mui32 serv_idx)
@@ -96,8 +101,6 @@ namespace Mdf
     void LoginClientConnect::onConfirm()
     {
         ClientIO::onConfirm();
-        M_Only(ConnectManager)->addClientConnect(ClientType_Login, this);
-        M_Only(ConnectManager)->confirmClient(ClientType_Login, mIndex);
         setTimer(true, 0, 1000);
 
         vector<ConnectID> idlist;
@@ -117,12 +120,6 @@ namespace Mdf
 		remsg.setProto(&msg);
 		remsg.setCommandID(SBMSG(ServerInfo));
         send(&remsg);
-    }
-    //------------------------------------------------------------------------
-    void LoginClientConnect::onClose()
-    {
-        M_Only(ConnectManager)->removeClientConnect(ClientType_Login, this);
-        M_Only(ConnectManager)->resetClient(ClientType_Login, mIndex);
     }
     //------------------------------------------------------------------------
     void LoginClientConnect::onTimer(TimeDurMS tick)

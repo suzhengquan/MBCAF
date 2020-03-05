@@ -84,7 +84,7 @@ namespace Mdf
         mKeyPW = keypw;
 
         SSLeay_add_ssl_algorithms();
-        
+
         mSSLctx = SSL_CTX_new(SSLv23_client_method());
         if (mSSLctx)
         {

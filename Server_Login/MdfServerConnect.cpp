@@ -32,12 +32,14 @@ using namespace MBCAF::Proto;
 namespace Mdf
 {
     //-----------------------------------------------------------------------
-    ServerConnect::ServerConnect(Mui8 type):
+    ServerConnect::ServerConnect(ACE_Reactor * tor, Mui8 type) :
+        ServerIO(tor),
         mType(type)
     {
     }
     //-----------------------------------------------------------------------
-    ServerConnect::ServerConnect()
+    ServerConnect::ServerConnect() :
+        ServerIO(0)
     {
     }
     //-----------------------------------------------------------------------
@@ -52,7 +54,6 @@ namespace Mdf
     //-----------------------------------------------------------------------
     void ServerConnect::onConnect()
     {
-        M_Only(ConnectManager)->addServerConnect(mType, this);
         setTimer(true, 0, 1000);
     }
     //-----------------------------------------------------------------------
@@ -108,7 +109,6 @@ namespace Mdf
     //-----------------------------------------------------------------------
     void ServerConnect::onClose()
     {
-        M_Only(ConnectManager)->removeServerConnect(mType, this);
         M_Only(ConnectManager)->removeServer(mType, getID());
     }
     //-----------------------------------------------------------------------

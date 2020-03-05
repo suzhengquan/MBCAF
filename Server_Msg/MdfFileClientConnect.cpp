@@ -79,9 +79,9 @@ namespace Mdf
         }
     }
     //-----------------------------------------------------------------------
-    FileClientConnect::FileClientConnect()
+    FileClientConnect::FileClientConnect(ACE_Reactor * tor) :
+        ClientConnect(tor)
     {
-        mIndex = 0;
     }
     //-----------------------------------------------------------------------
     FileClientConnect::~FileClientConnect()
@@ -95,9 +95,6 @@ namespace Mdf
     //-----------------------------------------------------------------------
     void FileClientConnect::onConfirm()
     {
-        ClientIO::onConfirm();
-        M_Only(ConnectManager)->addClientConnect(ClientType_File, this);
-        M_Only(ConnectManager)->confirmClient(ClientType_File, mIndex);
         setTimer(true, 0, 1000);
 
         MBCAF::HubServer::FileServerQ proto;
@@ -105,12 +102,6 @@ namespace Mdf
 		remsg.setProto(&proto);
 		remsg.setCommandID(SBMSG(FileServerQ));
         send(&remsg);
-    }
-    //-----------------------------------------------------------------------
-    void FileClientConnect::onClose()
-    {
-        M_Only(ConnectManager)->removeClientConnect(ClientType_File, this);
-        M_Only(ConnectManager)->resetClient(ClientType_File, mIndex);
     }
     //-----------------------------------------------------------------------
     void FileClientConnect::onTimer(TimeDurMS tick)

@@ -33,7 +33,8 @@ using namespace MBCAF::Proto;
 namespace Mdf
 {
     //-----------------------------------------------------------------------
-    MsgServerConnect::MsgServerConnect()
+    MsgServerConnect::MsgServerConnect(ACE_Reactor * tor) :
+        ServerIO(tor)
     {
     }
     //-----------------------------------------------------------------------
@@ -48,13 +49,7 @@ namespace Mdf
     //-----------------------------------------------------------------------
     void MsgServerConnect::onConnect()
     {
-        M_Only(ConnectManager)->addServerConnect(ServerType_MsgClient, this);
         setTimer(true, 0, 1000);
-    }
-    //-----------------------------------------------------------------------
-    void MsgServerConnect::onClose()
-    {
-        M_Only(ConnectManager)->removeServerConnect(ServerType_MsgClient, this);
     }
     //-----------------------------------------------------------------------
     void MsgServerConnect::onTimer(TimeDurMS tick)

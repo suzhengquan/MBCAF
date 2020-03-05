@@ -37,17 +37,17 @@ namespace Mdf
     class MsgServerConnect : public ServerIO
     {
     public:
-        MsgServerConnect();
+        MsgServerConnect(ACE_Reactor * tor);
         virtual ~MsgServerConnect();
 
+        /// @copydetails ServerIO::getType
+        Mui8 getType() const { return ServerType_MsgClient; }
+        
         /// @copydetails ServerIO::createInstance
         virtual ServerIO * createInstance() const;
 
         /// @copydetails ServerIO::onConnect
         virtual void onConnect();
-
-        /// @copydetails ServerIO::onClose
-        virtual void onClose();
 
         /// @copydetails ServerIO::onTimer
         virtual void onTimer(TimeDurMS tick);

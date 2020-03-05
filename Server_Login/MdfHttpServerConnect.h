@@ -38,8 +38,11 @@ namespace Mdf
     class HttpServerConnect : public ServerIO
     {
     public:
-        HttpServerConnect();
+        HttpServerConnect(ACE_Reactor * tor);
         virtual ~HttpServerConnect();
+        
+        /// @copydetails ServerIO::getType
+        Mui8 getType() const { return ServerType_HttpServer; }
         
         /// @copydetails ServerIO::createInstance
         ServerIO * createInstance() const;
@@ -49,9 +52,6 @@ namespace Mdf
 
         /// @copydetails ServerIO::onConnect
         void onConnect();
-
-        /// @copydetails ServerIO::onClose
-        void onClose();
 
         /// @copydetails ServerIO::onTimer
         void onTimer(TimeDurMS tick);

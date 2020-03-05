@@ -65,23 +65,27 @@ namespace Mdf
 		/**
 		@version 0.9.1
 		*/
-		inline ConnectID getHandle() const
-		{
-			return peer().get_handle();
-		}
+		inline ConnectID getHandle() const { return peer().get_handle(); }
 
+		/** lastest send time(tick)
+		@version 0.9.1
+		*/
+		inline Mui64 getSendMark() const { return mSendMark; }
+
+		/** lastest receive time(tick)
+		@version 0.9.1
+		*/
+		inline Mui64 getReceiveMark() const { return mReceiveMark; }
+        
 		/**
 		@version 0.9.1
 		*/
-		inline ClientIO * getBase() const
-		{
-			return mBase;
-		}
+		inline ClientIO * getBase() const { return mBase; }
 
-		inline ACE_SOCK_Stream * getStream() const
-		{
-			return &peer();
-		}
+        /**
+        @version 0.9.1
+        */
+		inline ACE_SOCK_Stream * getStream() const { return &peer(); }
 
         /// @copydetails ACE_Svc_Handler::open
 		virtual int open(void * = 0);
@@ -110,7 +114,9 @@ namespace Mdf
         ACE_Thread_Mutex mOutMute;
 		Mui32 mSendMark;
 		Mui32 mReceiveMark;
+    #ifdef _DEBUG
 		int mDebugMark;
+    #endif
         bool mAutoDestroy;
     };
 }

@@ -79,8 +79,8 @@ namespace Mdf
         }
     }
     //------------------------------------------------------------------------
-    PushClientConnect::PushClientConnect(Mui32 idx):
-        mIndex(idx)
+    PushClientConnect::PushClientConnect(ACE_Reactor * tor, Mui32 idx):
+        ClientConnect(tor, idx)
     {
     }
     //------------------------------------------------------------------------
@@ -96,19 +96,12 @@ namespace Mdf
     //------------------------------------------------------------------------
     void PushClientConnect::onConfirm()
     {
-        ClientIO::onConfirm();
-        M_Only(ConnectManager)->addClientConnect(ClientType_Push, this);
-        M_Only(ConnectManager)->confirmClient(ClientType_Push, mIndex);
         setTimer(true, 0, 1000);
-
         mPrimaryConnect = this;
     }
     //------------------------------------------------------------------------
     void PushClientConnect::onClose()
     {
-        M_Only(ConnectManager)->removeClientConnect(ClientType_Push, this);
-        M_Only(ConnectManager)->resetClient(ClientType_Push, mIndex);
-
         mPrimaryConnect = 0;
     }
     //------------------------------------------------------------------------

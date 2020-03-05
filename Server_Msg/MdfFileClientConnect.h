@@ -38,19 +38,19 @@ namespace Mdf
     class FileClientConnect : public ClientIO
     {
     public:
-        FileClientConnect();
+        FileClientConnect(ACE_Reactor * tor);
         virtual ~FileClientConnect();
 
         /**
         @version 0.9.1
         */
         void connect(const String & ip, Mui16 port);
+        
+        /// @copydetails ClientIO::getType
+        Mui8 getType() const { return ClientType_File; }
 
         /// @copydetails ClientIO::onConfirm
         virtual void onConfirm();
-
-        /// @copydetails ClientIO::onClose
-        virtual void onClose();
 
         /// @copydetails ClientIO::onTimer
         virtual void onTimer(TimeDurMS tick);
@@ -61,8 +61,8 @@ namespace Mdf
         /**
         @version 0.9.1
         */
-
         const list<MBCAF::Proto::IPAddress> & GetFileServerIPList();
+        
         /**
         @version 0.9.1
         */

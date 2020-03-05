@@ -37,32 +37,24 @@ namespace Mdf
     class LoginClientConnect : public ClientIO
     {
     public:
-        LoginClientConnect(Mui32 idx);
+        LoginClientConnect(ACE_Reactor * tor, Mui32 idx);
         virtual ~LoginClientConnect();
-
+        
         /**
         @version 0.9.1
         */
         void connect(const String & ip, Mui16 port);
+        
+        /// @copydetails ClientIO::getType
+        Mui32 getType() const;
 
-        /**
-        @version 0.9.1
-        */
+        /// @copydetails ClientIO::onConfirm
         virtual void onConfirm();
 
-        /**
-        @version 0.9.1
-        */
-        virtual void onClose();
-
-        /**
-        @version 0.9.1
-        */
+        /// @copydetails ClientIO::onTimer
         virtual void onTimer(TimeDurMS tick);
 
-        /**
-        @version 0.9.1
-        */
+        /// @copydetails ClientIO::onMessage
         virtual void onMessage(Message * msg);
 
         /**

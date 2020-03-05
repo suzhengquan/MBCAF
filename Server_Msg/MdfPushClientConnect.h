@@ -37,14 +37,17 @@ namespace Mdf
     class PushClientConnect : public ClientIO
     {
     public:
-        PushClientConnect(Mui32 idx);
+        PushClientConnect(ACE_Reactor * tor, Mui32 idx);
         virtual ~PushClientConnect();
-    
+        
         /**
         @version 0.9.1
         */
         void connect(const String & ip, Mui16 port);
     
+        /// @copydetails ClientIO::getType
+        Mui8 getType() const { return ClientType_Push; }
+
         /// @copydetails ClientIO::onConfirm
         virtual void onConfirm();
 

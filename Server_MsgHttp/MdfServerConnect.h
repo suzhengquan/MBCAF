@@ -66,14 +66,14 @@ namespace Mdf
     class ServerConnect : public ClientIO
     {
     public:
-        ServerConnect();
+        ServerConnect(ACE_Reactor * tor);
         virtual ~ServerConnect();
 
+        /// @copydetails ServerIO::getType
+        Mui8 getType() const { return ServerType_Server; }
+        
         /// @copydetails ClientIO::onConnect
         void onConnect();
-
-        /// @copydetails ClientIO::onClose
-        void onClose();
 
         /// @copydetails ClientIO::onTimer
         void onTimer(TimeDurMS tick);

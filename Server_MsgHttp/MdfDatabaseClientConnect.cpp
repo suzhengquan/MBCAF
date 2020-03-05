@@ -134,8 +134,8 @@ namespace Mdf
         return re;
     }
     //-----------------------------------------------------------------------
-    DataBaseClientConnect::DataBaseClientConnect(Mui32 idx):
-        mIndex(idx)
+    DataBaseClientConnect::DataBaseClientConnect(ACE_Reactor * tor, Mui32 idx):
+        ClientIO(tor, idx)
     {
     }
     //-----------------------------------------------------------------------
@@ -151,16 +151,7 @@ namespace Mdf
     //-----------------------------------------------------------------------
     void DataBaseClientConnect::onConfirm()
     {
-        ClientIO::onConfirm();
-        M_Only(ConnectManager)->addClientConnect(ClientType_DataBase, this);
-        M_Only(ConnectManager)->confirmClient(ClientType_DataBase, mIndex);
         setTimer(true, 0, 1000);
-    }
-    //-----------------------------------------------------------------------
-    void DataBaseClientConnect::onClose()
-    {
-        M_Only(ConnectManager)->removeClientConnect(ClientType_DataBase, this);
-        M_Only(ConnectManager)->resetClient(ClientType_DataBase, mIndex);
     }
     //-----------------------------------------------------------------------
     void DataBaseClientConnect::onTimer(TimeDurMS tick)

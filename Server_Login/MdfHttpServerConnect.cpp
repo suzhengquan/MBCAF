@@ -33,7 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace Mdf
 {
     //-----------------------------------------------------------------------
-    HttpServerConnect::HttpServerConnect()
+    HttpServerConnect::HttpServerConnect(ACE_Reactor * tor) :
+        ServerIO(tor)
     {
     }
     //-----------------------------------------------------------------------
@@ -52,7 +53,6 @@ namespace Mdf
     //-----------------------------------------------------------------------
     void HttpServerConnect::onConnect()
     {
-        M_Only(ConnectManager)->addServerConnect(ServerType_HttpServer, this);
         setTimer(true, 0, 1000);
     }
     //-----------------------------------------------------------------------
@@ -75,11 +75,6 @@ namespace Mdf
                 stop();
             }
         }
-    }
-    //-----------------------------------------------------------------------
-    void HttpServerConnect::onClose()
-    {
-        M_Only(ConnectManager)->removeServerConnect(ServerType_HttpServer, this);
     }
     //-----------------------------------------------------------------------
     void HttpServerConnect::onTimer(TimeDurMS curr_tick)

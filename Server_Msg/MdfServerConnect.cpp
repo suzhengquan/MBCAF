@@ -99,7 +99,8 @@ namespace Mdf
         signal(SIGHUP, signalHup);
     }
     //-----------------------------------------------------------------------
-    ServerConnect::ServerConnect()
+    ServerConnect::ServerConnect(ACE_Reactor * tor) :
+        ServerIO(tor)
     {
         mUserID = 0;
         mOpen = false;
@@ -114,14 +115,12 @@ namespace Mdf
     //-----------------------------------------------------------------------
     void ServerConnect::onConnect()
     {
-        M_Only(ConnectManager)->addServerConnect(ServerType_Server, this);
         mLoginTime = M_Only(ConnectManager)->getTimeTick();
         setTimer(true, 0, 1000);
     }
     //-----------------------------------------------------------------------
     void ServerConnect::onClose()
     {
-        M_Only(ConnectManager)->removeServerConnect(ServerType_Server, this);
         Mlog("Close client, handle=%d, user_id=%u ", getID, mUserID);
 
         User * userobj = M_Only(UserManager)->getUser(mUserID);

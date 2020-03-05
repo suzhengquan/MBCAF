@@ -29,8 +29,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace Mdf
 {
     //-----------------------------------------------------------------------
-    ClientIO::ClientIO(ACE_Reactor * tor):
+    ClientIO::ClientIO(ACE_Reactor * tor, Mui32 idx):
         mReactor(tor ? tor : ACE_Reactor::instance()),
+        mIndex(idx),
         mIOPrc(0),
         mMsgPrc(0),
         mMsgBaseIndex(0),
@@ -272,31 +273,6 @@ namespace Mdf
     {
         if(mMsgPrc)
             (this->*mMsgPrc)(msg);
-    }
-    //-----------------------------------------------------------------------
-    void ClientIO::onConfirm()
-    {
-
-    }
-    //-----------------------------------------------------------------------
-    void ClientIO::onClose()
-    {
-
-    }
-    //-----------------------------------------------------------------------
-    void ClientIO::onReceiveError()
-    {
-
-    }
-    //-----------------------------------------------------------------------
-    void ClientIO::onTimer(TimeDurMS time)
-    {
-
-    }
-    //-----------------------------------------------------------------------
-    void ClientIO::onException()
-    {
-
     }
     //-----------------------------------------------------------------------
 }

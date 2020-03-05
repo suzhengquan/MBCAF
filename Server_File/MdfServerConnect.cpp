@@ -35,7 +35,8 @@ using namespace MBCAF::Proto;
 namespace Mdf
 {
     //-----------------------------------------------------------------------
-    ServerConnect::ServerConnect() :
+    ServerConnect::ServerConnect(ACE_Reactor * tor) :
+        ServerIO(tor)
         mUserCheck(false),
         mUserID(0),
         mTask(NULL) 
@@ -59,7 +60,6 @@ namespace Mdf
     //-----------------------------------------------------------------------
     void ServerConnect::onConnect()
     {
-        M_Only(ConnectManager)->addServerConnect(ServerType_Server, this);
         setTimer(true, 0, 1000);
         setSendSize(SOCKET_BUF_SIZE);
         setRecvSize(SOCKET_BUF_SIZE);
@@ -85,8 +85,6 @@ namespace Mdf
             mTask = NULL;
         }
         mUserCheck = false;
-
-        M_Only(ConnectManager)->removeServerConnect(ServerType_Server, this);
     }
     //-----------------------------------------------------------------------
     void ServerConnect::onTimer(TimeDurMS curr_tick)

@@ -30,25 +30,30 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MdfServerIO.h"
 #include "MdfStrUtil.h"
 
- /**
-  * This macro is used to increase the invocation counter by one when entering
-  * handle_input(). It also checks wether the counter is greater than zero
-  * indicating, that handle_input() has been called before.
-*/
-#define INVOCATION_ENTER()			\
-{									\
-    if (mDebugMark > 0)				\
-        MlogError(ACE_TEXT("Multiple invocations detected.\n")); \
-    mDebugMark++;					\
-}
+#ifdef _DEBUG
+    /**
+     * This macro is used to increase the invocation counter by one when entering
+     * handle_input(). It also checks wether the counter is greater than zero
+     * indicating, that handle_input() has been called before.
+    */
+    #define INVOCATION_ENTER()										\
+    {																\
+        if (mDebugMark > 0)											\
+            MlogError(ACE_TEXT("Multiple invocations detected.\n"));\
+        mDebugMark++;												\
+    }
 
- /**
-  * THis macro is the counter part to INVOCATION_ENTER(). It decreases the
-  * invocation counter and then returns the given value. This macro is
-  * here for convenience to decrease the invocation counter also when returning
-  * due to errors.
-  */
-#define INVOCATION_RETURN(retval) { mDebugMark--; return retval; }
+    /*
+     * THis macro is the counter part to INVOCATION_ENTER(). It decreases the
+     * invocation counter and then returns the given value. This macro is
+     * here for convenience to decrease the invocation counter also when returning
+     * due to errors.
+    */
+    #define INVOCATION_RETURN(retval) { mDebugMark--; return retval; }
+#else
+    #define INVOCATION_ENTER()
+    #define INVOCATION_RETURN(retval)
+#endif
 
 namespace Mdf
 {
@@ -169,6 +174,7 @@ namespace Mdf
         mBase->setIP(tmpaddr.get_host_addr(), tmpaddr.get_port_number());
 #endif
         mBase->mStop = false;
+        M_Only(ConnectManager)->addServerConnect(mBase->getType(), mBase);
         mBase->onConnect();
 
         return 0;
@@ -310,9 +316,10 @@ namespace Mdf
 	int SocketServerPrc::handle_close(ACE_HANDLE, ACE_Reactor_Mask)
     {
         M_Trace("SocketServerPrc::handle_close(ACE_HANDLE, ACE_Reactor_Mask)");
-
+        M_Only(ConnectManager)->removeServerConnect(mBase->getType(), mBase);
         mBase->mStop = true;
         mBase->setTimer(false, 0, 0);
+        
         mBase->onClose();
 
         if (mBase->getStream()->close() == -1)

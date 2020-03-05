@@ -38,13 +38,16 @@ namespace Mdf
     class RouteClientConnect : public ClientIO
     {
     public:
-        RouteClientConnect(Mui32 idx);
+        RouteClientConnect(ACE_Reactor * tor, Mui32 idx);
         virtual ~RouteClientConnect();
 
         /**
         @version 0.9.1
         */
         void connect(const String & ip, Mui16 port);
+        
+        /// @copydetails ClientIO::getType
+        Mui8 getType() const {return ClientType_Route; }
 
         /// @copydetails ClientIO::onConfirm
         virtual void onConfirm();

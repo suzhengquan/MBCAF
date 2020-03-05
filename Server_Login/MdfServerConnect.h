@@ -38,8 +38,11 @@ namespace Mdf
     class ServerConnect : public ServerIO
     {
     public:
-        ServerConnect(Mui8 type);
+        ServerConnect(ACE_Reactor * tor, Mui8 type);
         virtual ~ServerConnect();
+        
+        /// @copydetails ServerIO::getType
+        Mui8 getType() const { return mType; }
 
         ///@copydetails ServerIO::createInstance
         ServerIO * createInstance() const;

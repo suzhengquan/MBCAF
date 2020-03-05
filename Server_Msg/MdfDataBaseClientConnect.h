@@ -34,19 +34,19 @@ namespace Mdf
     class DataBaseClientConnect : public ClientIO
     {
     public:
-        DataBaseClientConnect(Mui32 idx);
+        DataBaseClientConnect(ACE_Reactor * tor,Mui32 idx);
         virtual ~DataBaseClientConnect();
 
         /**
         @version 0.9.1
         */
         void connect(const String & ip, Mui16 port);
+        
+        /// @copydetails ClientIO::getType
+        Mui8 getType() const {return ClientType_DataBase; }
 
         /// @copydetails ClientIO::onConfirm
         virtual void onConfirm();
-
-        /// @copydetails ClientIO::onClose
-        virtual void onClose();
 
         /// @copydetails ClientIO::onTimer
         virtual void onTimer(TimeDurMS tick);

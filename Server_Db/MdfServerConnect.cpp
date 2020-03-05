@@ -71,7 +71,8 @@ namespace Mdf
         Message * mMessage;
     };
     //------------------------------------------------------------------
-    ServerConnect::ServerConnect()
+    ServerConnect::ServerConnect(ACE_Reactor * tor) :
+        ServerIO(tor)
     {
     }
     //------------------------------------------------------------------
@@ -88,12 +89,6 @@ namespace Mdf
     void ServerConnect::onConnect()
     {
         setTimer(true, 0, 1000);
-        M_Only(ConnectManager)->addServerConnect(ServerType_Server, this);
-    }
-    //------------------------------------------------------------------
-    void ServerConnect::onClose()
-    {
-        M_Only(ConnectManager)->removeServerConnect(ServerType_Server, this);
     }
     //------------------------------------------------------------------
     void ServerConnect::onTimer(TimeDurMS tick)

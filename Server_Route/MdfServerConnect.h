@@ -37,9 +37,12 @@ namespace Mdf
     class ServerConnect : public ServerIO
     {
     public:
-        ServerConnect();
+        ServerConnect(ACE_Reactor * tor);
         virtual ~ServerConnect();
 
+        /// @copydetails ServerIO::getType
+        Mui8 getType() const { return ServerType_Server; }
+        
         /// @copydetails ServerIO::createInstance
         virtual ServerIO * createInstance() const;
 

@@ -110,8 +110,8 @@ namespace Mdf
         return mPrimaryConnect;
     }
     //-----------------------------------------------------------------------
-    RouteClientConnect::RouteClientConnect(Mui32 idx):
-        mIndex(idx)
+    RouteClientConnect::RouteClientConnect(ACE_Reactor * tor, Mui32 idx):
+        ClientConnect(tor, idx)
     {
     }
     //-----------------------------------------------------------------------
@@ -127,8 +127,6 @@ namespace Mdf
     void RouteClientConnect::onConfirm()
     {
         ClientIO::onConfirm();
-        M_Only(ConnectManager)->addClientConnect(ClientType_Route, this);
-        M_Only(ConnectManager)->confirmClient(ClientType_Route, mIndex);
         setTimer(true, 0, 1000);
 
         if(mPrimaryConnect == NULL) 
@@ -139,9 +137,6 @@ namespace Mdf
     //-----------------------------------------------------------------------
     void RouteClientConnect::onClose()
     {
-        M_Only(ConnectManager)->removeClientConnect(ClientType_Route, this);
-        M_Only(ConnectManager)->resetClient(ClientType_Route, mIndex);
-
         if(mPrimaryConnect == this)
         {
             checkPrimary();
