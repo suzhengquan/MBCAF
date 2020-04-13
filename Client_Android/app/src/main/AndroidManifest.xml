@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.MBCAF">
+
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="26" />
+
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:resizeable="true"
+        android:smallScreens="true" />
+
+    <application
+        android:name=".app.GSGS"
+        android:icon="@drawable/logo"
+        android:largeHeap="true"
+        android:label="@string/t001"
+        android:theme="@android:style/Theme.NoTitleBar" >
+
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+
+        <activity
+            android:name=".app.ui.activity.MessageActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/t001"
+            android:launchMode="singleTask"
+            android:screenOrientation="fullSensor" >
+        </activity>
+        <activity
+            android:name=".app.ui.activity.LoginActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/t001"
+            android:screenOrientation="fullSensor" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".app.ui.activity.ContactFragmentActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/t008"
+            android:screenOrientation="fullSensor" >
+        </activity>
+        <activity
+            android:name=".app.ui.activity.MainActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:launchMode="singleTask"
+            android:screenOrientation="fullSensor" >
+        </activity>
+
+        <service
+            android:name=".app.network.IMService"
+            android:exported="false" >
+        </service>
+        <service android:name=".app.network.LoadImageService" />
+
+        <activity
+            android:name=".app.ui.activity.PickPhotoActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="fullSensor"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".app.ui.activity.ImageGridActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="fullSensor"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".app.ui.activity.PreviewActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="fullSensor"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".app.ui.activity.PreviewTextActivity"
+            android:screenOrientation="fullSensor"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".app.ui.activity.PreviewGifActivity"
+            android:screenOrientation="fullSensor"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".app.ui.activity.UserInfoActivity"
+            android:screenOrientation="fullSensor"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".app.ui.activity.GroupManagermentActivity"
+            android:screenOrientation="fullSensor"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".app.ui.activity.GroupMemberSelectActivity"
+            android:screenOrientation="fullSensor"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:windowSoftInputMode="adjustNothing" >
+        </activity>
+        <activity
+            android:name=".app.ui.activity.SettingActivity"
+            android:screenOrientation="fullSensor"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".app.ui.activity.SearchActivity"
+            android:screenOrientation="fullSensor"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".app.ui.activity.WebViewFragmentActivity"
+            android:screenOrientation="fullSensor"
+            android:theme="@android:style/Theme.NoTitleBar" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="com.mbcaf" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".app.ui.activity.DetailPortraitActivity"
+            android:screenOrientation="fullSensor"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".app.ui.activity.PreviewMessageImagesActivity"
+            android:screenOrientation="fullSensor"
+            >
+        </activity>
+
+    </application>
+
+</manifest>
