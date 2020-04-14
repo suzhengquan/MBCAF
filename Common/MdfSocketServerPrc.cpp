@@ -63,7 +63,8 @@ namespace Mdf
 		mBase(0),
         mReactor(0),
         mDebugMark(0),
-        mAutoDestroy(true)
+        mAutoDestroy(true),
+        mSplitMessage(false)
     {
         mSendMark = mReceiveMark = M_Only(ConnectManager)->getTimeTick();
         M_Trace("SocketServerPrc::SocketServerPrc()");
@@ -74,7 +75,8 @@ namespace Mdf
         mStrategy(0, this, ACE_Event_Handler::WRITE_MASK),
         mBase(prc),
         mDebugMark(0),
-        mAutoDestroy(true)
+        mAutoDestroy(true),
+        mSplitMessage(false)
     {
         mSendMark = mReceiveMark = M_Only(ConnectManager)->getTimeTick();
         prc->bind(this);
@@ -119,7 +121,7 @@ namespace Mdf
 
         ACE_Message_Block * block = 0;
         ACE_NEW_RETURN(block, ACE_Message_Block(cnt), -1);
-        //ACE_Time_Value nowait(ACE_OS::gettimeofday());
+        block->copy((const char *)data, cnt);
         {
             ScopeLock tlock(mOutMute);
             if (mOutQueue.enqueue_tail(block) == -1)//autowakeupwrite
@@ -127,6 +129,50 @@ namespace Mdf
                 MlogError(ACE_TEXT("(%P|%t) %p; discarding data\n"), ACE_TEXT("enqueue failed"));
                 block->release();
                 return 0;
+            }
+        }
+        return cnt;
+    }
+    //-----------------------------------------------------------------------
+	Mi32 SocketServerPrc::sendHead(void * data, MCount cnt)
+    {
+		if(mBase->isStop())
+		{
+			return 0;
+		}
+
+        ACE_Message_Block * block = 0;
+        ACE_NEW_RETURN(block, ACE_Message_Block(data, cnt), -1);
+        block->copy((const char *)data, cnt);
+        {
+            ScopeLock tlock(mOutMute);
+            if(mSplitMessage)
+            {
+                ACE_Message_Block * mb = 0;
+                if(0 <= mOutQueue.peek_dequeue_head(mb))
+                {
+                    if(mb->cont() == 0)
+                    {
+                        mb->cont(block);
+                        return cnt;
+                    }
+                }
+
+                if (mOutQueue.enqueue_tail(block) == -1)
+                {
+                    MlogError(ACE_TEXT("(%P|%t) %p; discarding data\n"), ACE_TEXT("enqueue failed"));
+                    block->release();
+                    return 0;
+                }
+            }
+            else
+            {
+                if (mOutQueue.enqueue_head(block) == -1)
+                {
+                    MlogError(ACE_TEXT("(%P|%t) %p; discarding data\n"), ACE_TEXT("enqueue failed"));
+                    block->release();
+                    return 0;
+                }
             }
         }
         return cnt;
@@ -217,7 +263,7 @@ namespace Mdf
 				mBase->onMessage(msg);
 
                 mReceiveBuffer.readSkip(msgsize);
-                delete msg;
+                mBase->destroy(msg);
                 msg = NULL;
             }
         }
@@ -249,6 +295,9 @@ namespace Mdf
                 sedsize = M_SocketOutSize;
             }
 
+            mOutMute.lock();
+            mSplitMessage = true;
+            mOutMute.unlock();
             int dsedsize = mBase->getStream()->send(mb->rd_ptr(), sedsize);
             if(dsedsize <= 0)
             {
@@ -265,13 +314,34 @@ namespace Mdf
             {
                 mb->rd_ptr((size_t)dsedsize);
             }
+            mSendMark = M_Only(ConnectManager)->getTimeTick();
+            
             if (mb->length() <= 0)
             {
-                mOutQueue.dequeue_head(mb);
-                mb->release();
+                ScopeLock tlock(mOutMute);
+                mSplitMessage = false;
+                ACE_Message_Block * cnt = mb->cont();
+                if(cnt)
+                {
+                    mb->cont(0);
+                    mOutQueue.dequeue_head(mb);
+                    mb->release();
+                    if (mOutQueue.enqueue_head(cnt) == -1)
+                    {
+                        cnt->release();
+                        INVOCATION_RETURN(-1);
+                    }
+                }
+                else
+                {
+                    mOutQueue.dequeue_head(mb);
+                    mb->release();
+                }
+            }
+            else
+            {
                 break;
             }
-			mSendMark = M_Only(ConnectManager)->getTimeTick();
         }
 
         if (mBase->isAbort())

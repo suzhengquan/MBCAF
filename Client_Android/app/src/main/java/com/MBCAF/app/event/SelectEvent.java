@@ -4,8 +4,6 @@ import com.MBCAF.app.ui.adapter.album.ImageItem;
 
 import java.util.List;
 
-/**
- */
 public class SelectEvent {
     private List<ImageItem> list;
     public SelectEvent(List<ImageItem> list){

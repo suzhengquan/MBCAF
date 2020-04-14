@@ -15,7 +15,6 @@ import android.app.NotificationChannel;
 import android.view.View;
 import android.os.Build;
 
-import com.MBCAF.app.ui.activity.MainActivity;
 import com.MBCAF.db.entity.GroupEntity;
 import com.MBCAF.db.entity.UserEntity;
 import com.MBCAF.db.sp.ConfigurationSp;
@@ -84,7 +83,7 @@ public class IMNotificationManager extends IMManager{
 	    s.stopForeground(false);
     }
     @Override
-    public void doOnStart() {
+    public void onStart() {
         cancelAllNotifications();
     }
 

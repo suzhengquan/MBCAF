@@ -125,6 +125,11 @@ namespace Mdf
         virtual Message * create(Mui8 * buf, Mui32 len);
 
         /**
+        @version 1.1.0
+        */
+        virtual destroy(Message * msg);
+        
+        /**
         @version 0.9.1
         */
         inline void abort()

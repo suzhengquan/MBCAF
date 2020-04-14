@@ -38,7 +38,7 @@ public class IMUnreadMsgManager extends IMManager {
     private boolean unreadListReady = false;
 
     @Override
-    public void doOnStart() {}
+    public void onStart() {}
 
 
     // 未读消息控制器，本地是不存状态的

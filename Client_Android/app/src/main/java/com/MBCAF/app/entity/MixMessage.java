@@ -13,14 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MixMessage extends MessageEntity {
-
     public List<MessageEntity> msgList ;
 
-
-    /**
-     * 从net端解析需要
-     * @param entityList
-     */
     public MixMessage(List<MessageEntity> entityList){
         if(entityList ==null || entityList.size()<=1){
             throw new RuntimeException("MixMessage# type is error!");
@@ -132,7 +126,6 @@ public class MixMessage extends MessageEntity {
         mixMessage.setMsgList(msgList);
         return mixMessage;
     }
-
 
     public List<MessageEntity> getMsgList() {
         return msgList;

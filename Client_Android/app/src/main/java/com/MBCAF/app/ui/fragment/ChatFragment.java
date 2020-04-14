@@ -27,12 +27,10 @@ import com.MBCAF.app.ui.adapter.ChatAdapter;
 import com.MBCAF.common.IMUIHelper;
 import com.MBCAF.app.entity.RecentInfo;
 import com.MBCAF.app.event.GroupEvent;
-import com.MBCAF.app.event.LoginEvent;
-import com.MBCAF.app.event.ReconnectEvent;
-import com.MBCAF.app.event.SessionEvent;
-import com.MBCAF.app.event.SocketEvent;
+import com.MBCAF.app.event.CommonEvent;
+import com.MBCAF.app.event.CommonEvent;
+import com.MBCAF.app.event.CommonEvent;
 import com.MBCAF.app.event.UnreadEvent;
-import com.MBCAF.app.event.UserInfoEvent;
 import com.MBCAF.app.manager.IMLoginManager;
 import com.MBCAF.app.manager.IMReconnectManager;
 import com.MBCAF.app.manager.IMUnreadMsgManager;
@@ -192,13 +190,64 @@ public class ChatFragment extends MainFragment
        IMUIHelper.openChatActivity(getActivity(),recentInfo.getSessionKey());
     }
 
-    public void onEventMainThread(SessionEvent sessionEvent){
-        logger.d("chatfragment#SessionEvent# -> %s", sessionEvent);
-        switch (sessionEvent){
-            case RECENT_SESSION_LIST_UPDATE:
-            case RECENT_SESSION_LIST_SUCCESS:
-            case SET_SESSION_TOP:
+    public void onEventMainThread(CommonEvent event){
+        logger.d("chatfragment#CommonEvent# -> %s", event);
+        switch (event){
+            case CE_Session_RecentListUpdate:
+            case CE_Session_RecentListSuccess:
+            case CE_Session_SetTop: {
                 onRecentContactDataReady();
+            }
+            break;
+            case CE_User_InfoUpdate:
+            case CE_User_InfoOK: {
+                onRecentContactDataReady();
+                searchDataReady();
+            }
+            break;
+            case CE_Reconnect_Disable:{
+                handleServerDisconnected();
+            }break;
+            case CE_Connect_MsgServerDisConnect: {
+                handleServerDisconnected();
+            }
+            break;
+            case CE_Connect_MsgServerConnectFail:
+            case CE_Connect_MsgServerAddrAFail: {
+                handleServerDisconnected();
+                onSocketFailure(event);
+            }
+            break;
+            case CE_Login_Success:
+            case CE_Login_In: {
+                logger.d("chatFragment#login#recv handleDoingLogin event");
+                if (reconnectingProgressBar != null) {
+                    reconnectingProgressBar.setVisibility(View.VISIBLE);
+                }
+            }break;
+            case CE_Login_MsgService:
+            case CE_Login_OK: {
+                isManualMConnect = false;
+                logger.d("chatfragment#loginOk");
+                noNetworkView.setVisibility(View.GONE);
+            }break;
+            case CE_Login_FailAuth:
+            case CE_Login_Fail:{
+                onLoginFailure(event);
+            }break;
+            case CE_Login_PCOffline:
+            case CE_Login_KinckPCSuccess: {
+                onPCLoginStatusNotify(false);
+            }
+            break;
+            case CE_Login_KinckPCFail:
+                Toast.makeText(getActivity(),getString(R.string.t084), Toast.LENGTH_SHORT).show();
+                break;
+            case CE_Login_PCOnline:
+                onPCLoginStatusNotify(true);
+                break;
+            case CE_Login_Out :
+                reconnectingProgressBar.setVisibility(View.GONE);
                 break;
         }
     }
@@ -235,79 +284,8 @@ public class ChatFragment extends MainFragment
                 break;
         }
     }
-    public void onEventMainThread(UserInfoEvent event){
-        switch (event){
-            case USER_INFO_UPDATE:
-            case USER_INFO_OK:
-                onRecentContactDataReady();
-                searchDataReady();
-                break;
-        }
-    }
 
-    public void onEventMainThread(LoginEvent loginEvent){
-        logger.d("chatfragment#LoginEvent# -> %s", loginEvent);
-        switch (loginEvent){
-            case LOCAL_LOGIN_SUCCESS:
-            case LOGINING: {
-                logger.d("chatFragment#login#recv handleDoingLogin event");
-                if (reconnectingProgressBar != null) {
-                     reconnectingProgressBar.setVisibility(View.VISIBLE);
-                }
-            }break;
-
-            case LOCAL_LOGIN_MSG_SERVICE:
-            case LOGIN_OK: {
-                isManualMConnect = false;
-                logger.d("chatfragment#loginOk");
-                noNetworkView.setVisibility(View.GONE);
-            }break;
-
-            case LOGIN_AUTH_FAILED:
-            case LOGIN_INNER_FAILED:{
-                onLoginFailure(loginEvent);
-            }break;
-
-            case PC_OFFLINE:
-            case KICK_PC_SUCCESS:
-                onPCLoginStatusNotify(false);
-                break;
-
-            case KICK_PC_FAILED:
-                Toast.makeText(getActivity(),getString(R.string.t084), Toast.LENGTH_SHORT).show();
-                break;
-            case PC_ONLINE:
-                onPCLoginStatusNotify(true);
-                break;
-
-            default: reconnectingProgressBar.setVisibility(View.GONE);
-                break;
-        }
-    }
-
-
-    public void onEventMainThread(SocketEvent socketEvent){
-        switch (socketEvent){
-            case MSG_SERVER_DISCONNECTED:
-                handleServerDisconnected();
-                break;
-
-            case CONNECT_MSG_SERVER_FAILED:
-            case REQ_MSG_SERVER_ADDRS_FAILED:
-                handleServerDisconnected();
-                onSocketFailure(socketEvent);break;
-        }
-    }
-
-    public void onEventMainThread(ReconnectEvent reconnectEvent){
-        switch (reconnectEvent){
-            case DISABLE:{
-                handleServerDisconnected();
-            }break;
-        }
-    }
-
-    private void  onLoginFailure(LoginEvent event){
+    private void  onLoginFailure(CommonEvent event){
         if(!isManualMConnect){return;}
         isManualMConnect = false;
         String errorTip = getString(IMUIHelper.getLoginErrorTip(event));
@@ -316,7 +294,7 @@ public class ChatFragment extends MainFragment
         Toast.makeText(getActivity(), errorTip, Toast.LENGTH_SHORT).show();
     }
 
-    private void  onSocketFailure(SocketEvent event){
+    private void  onSocketFailure(CommonEvent event){
         if(!isManualMConnect){return;}
         isManualMConnect = false;
         String errorTip = getString(IMUIHelper.getSocketErrorTip(event));

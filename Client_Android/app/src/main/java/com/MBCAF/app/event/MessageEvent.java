@@ -4,9 +4,6 @@ import com.MBCAF.db.entity.MessageEntity;
 
 import java.util.ArrayList;
 
-/**
- *
- */
 public class MessageEvent {
 
     private ArrayList<MessageEntity> msgList;

@@ -218,7 +218,7 @@ namespace Mdf
 				mBase->onMessage(msg);
 
 				mReceiveBuffer.readSkip(msgsize);
-				delete msg;
+				mBase->destroy(msg);
 				msg = NULL;
 			}
 		}
@@ -245,6 +245,9 @@ namespace Mdf
 		//ACE_Time_Value nowait(ACE_OS::gettimeofday());
 		while (-1 != getq(mb))
 		{
+            mOutMute.lock();
+            mSpliteMessage = true;
+            mOutMute.unlock();
 			ssize_t dsedsize = SSL_write(mSSL, mb->rd_ptr(), mb->length());
             if (dsedsize < 0)
             {
@@ -284,6 +287,9 @@ namespace Mdf
 				ungetq(mb);
 				break;
 			}
+            mOutMute.lock();
+            mSpliteMessage = false;
+            mOutMute.unlock();
             mb->release();
             mSendMark = M_Only(ConnectManager)->getTimeTick();
 		}

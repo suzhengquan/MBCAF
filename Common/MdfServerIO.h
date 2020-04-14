@@ -153,6 +153,11 @@ namespace Mdf
         @version 0.9.1
         */
         virtual Message * create(Mui8 * buf, Mui32 len);
+        
+        /**
+        @version 1.1.0
+        */
+        virtual destroy(Message * msg);
 
         /**
         @version 0.9.1

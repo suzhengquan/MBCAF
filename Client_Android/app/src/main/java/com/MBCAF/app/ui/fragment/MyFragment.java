@@ -20,7 +20,7 @@ import android.widget.Toast;
 import com.MBCAF.db.entity.UserEntity;
 import com.MBCAF.R;
 import com.MBCAF.common.IMUIHelper;
-import com.MBCAF.app.event.UserInfoEvent;
+import com.MBCAF.app.event.CommonEvent;
 import com.MBCAF.app.manager.IMLoginManager;
 import com.MBCAF.app.network.IMService;
 import com.MBCAF.app.ui.activity.SettingActivity;
@@ -216,9 +216,9 @@ public class MyFragment extends MainFragment {
 	protected void initHandler() {
 	}
 
-    public void onEventMainThread(UserInfoEvent event){
+    public void onEventMainThread(CommonEvent event){
         switch (event){
-            case USER_INFO_OK:
+            case CE_User_InfoOK:
                 init(imServiceConnector.getIMService());
         }
     }

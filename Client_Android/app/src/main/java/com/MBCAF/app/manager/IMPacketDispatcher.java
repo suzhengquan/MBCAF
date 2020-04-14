@@ -11,12 +11,6 @@ public class IMPacketDispatcher
 {
 	private static Logger logger = Logger.getLogger(IMPacketDispatcher.class);
 
-    /**
-     * @param commandId
-     * @param buffer
-     *
-     * 有没有更加优雅的方式
-     */
     public static void loginPacketDispatcher(int commandId,CodedInputStream buffer)
     {
         try

@@ -6,7 +6,7 @@ import com.google.protobuf.CodedInputStream;
 import com.MBCAF.db.DBInterface;
 import com.MBCAF.db.entity.UserEntity;
 import com.MBCAF.db.sp.LoginSp;
-import com.MBCAF.app.event.LoginEvent;
+import com.MBCAF.app.event.CommonEvent;
 import com.MBCAF.pb.base.ProtoBuf2JavaBean;
 import com.MBCAF.pb.Proto;
 import com.MBCAF.pb.MsgServer;
@@ -17,16 +17,10 @@ import java.io.IOException;
 
 import de.greenrobot.event.EventBus;
 
-/**
- * 很多情况下都是一种权衡
- * 登陆控制
- * @yingmu
- */
 public class IMLoginManager extends IMManager 
 {
     private Logger logger = Logger.getLogger(IMLoginManager.class);
 
-    /**单例模式*/
     private static IMLoginManager inst = new IMLoginManager();
     public static IMLoginManager instance() 
     {
@@ -44,7 +38,6 @@ public class IMLoginManager extends IMManager
     private int loginId;
     private UserEntity loginInfo;
 
-
     /**loginManger 自身的状态 todo 状态太多就采用enum的方式*/
     private boolean  identityChanged = false;
     private boolean isKickout = false;
@@ -54,12 +47,12 @@ public class IMLoginManager extends IMManager
     //本地包含登陆信息了[可以理解为支持离线登陆了]
     private boolean isLocalLogin = false;
 
-    private LoginEvent loginStatus= LoginEvent.NONE;
+    private CommonEvent loginStatus= CommonEvent.CE_NONE;
 
     /**-------------------------------功能方法--------------------------------------*/
 
     @Override
-    public void doOnStart() {
+    public void onStart() {
     }
 
     @Override
@@ -72,7 +65,7 @@ public class IMLoginManager extends IMManager
         isKickout=false;
         isPcOnline = false;
         everLogined = false;
-        loginStatus= LoginEvent.NONE;
+        loginStatus= CommonEvent.CE_NONE;
         isLocalLogin = false;
     }
 
@@ -80,7 +73,7 @@ public class IMLoginManager extends IMManager
      * 实现自身的事件驱动
      * @param event
      */
-    public void triggerEvent(LoginEvent event) 
+    public void triggerEvent(CommonEvent event)
     {
         loginStatus = event;
         EventBus.getDefault().postSticky(event);
@@ -121,7 +114,7 @@ public class IMLoginManager extends IMManager
         }finally {
             LoginSp.instance().setLoginInfo(loginUserName,null,loginId);
             logger.d("login#send logout finish message");
-            triggerEvent(LoginEvent.LOGIN_OUT);
+            triggerEvent(CommonEvent.CE_Login_Out);
         }
     }
 
@@ -152,7 +145,7 @@ public class IMLoginManager extends IMManager
         }else{
             logger.d("reconnect#login#userName or loginPwd is null!!");
             everLogined = false;
-            triggerEvent(LoginEvent.LOGIN_AUTH_FAILED);
+            triggerEvent(CommonEvent.CE_Login_FailAuth);
         }
     }
 
@@ -161,7 +154,7 @@ public class IMLoginManager extends IMManager
     {
         if(identity == null)
         {
-            triggerEvent(LoginEvent.LOGIN_AUTH_FAILED);
+            triggerEvent(CommonEvent.CE_Login_FailAuth);
             return;
         }
         loginUserName = identity.getLoginName();
@@ -183,7 +176,7 @@ public class IMLoginManager extends IMManager
             // 这两个状态不要忘记掉
             isLocalLogin = true;
             everLogined = true;
-            triggerEvent(LoginEvent.LOCAL_LOGIN_SUCCESS);
+            triggerEvent(CommonEvent.CE_Login_Success);
         }while(false);
         // 开始请求网络
         imSocketManager.reqMsgServerAddrs();
@@ -217,7 +210,7 @@ public class IMLoginManager extends IMManager
     public void reqLoginMsgServer() 
     {
         logger.i("login#reqLoginMsgServer");
-        triggerEvent(LoginEvent.LOGINING);
+        triggerEvent(CommonEvent.CE_Login_In);
         /** 加密 */
         String desPwd = new String(com.MBCAF.app.network.Security.getInstance().EncryptPass(loginPwd));
 
@@ -239,7 +232,7 @@ public class IMLoginManager extends IMManager
                    ServerBase.LoginA  LoginA = ServerBase.LoginA.parseFrom((CodedInputStream)response);
                    onRepMsgServerLogin(LoginA);
                } catch (IOException e) {
-                   triggerEvent(LoginEvent.LOGIN_INNER_FAILED);
+                   triggerEvent(CommonEvent.CE_Login_Fail);
                    logger.e("login failed,cause by %s",e.getCause());
                }
            }
@@ -247,13 +240,13 @@ public class IMLoginManager extends IMManager
            @Override
            public void onFaild() 
            {
-               triggerEvent(LoginEvent.LOGIN_INNER_FAILED);
+               triggerEvent(CommonEvent.CE_Login_Fail);
            }
 
            @Override
            public void onTimeout() 
            {
-               triggerEvent(LoginEvent.LOGIN_INNER_FAILED);
+               triggerEvent(CommonEvent.CE_Login_Fail);
            }
        });
     }
@@ -269,7 +262,7 @@ public class IMLoginManager extends IMManager
         if (loginRes == null) 
         {
             logger.e("login#decode LoginResponse failed");
-            triggerEvent(LoginEvent.LOGIN_AUTH_FAILED);
+            triggerEvent(CommonEvent.CE_Login_FailAuth);
             return;
         }
 
@@ -287,13 +280,13 @@ public class IMLoginManager extends IMManager
             case RT_NoValidateFail:
             {
                 logger.e("login#login msg server failed, result:%s", code);
-                triggerEvent(LoginEvent.LOGIN_AUTH_FAILED);
+                triggerEvent(CommonEvent.CE_Login_FailAuth);
             }break;
 
             default:
             {
                 logger.e("login#login msg server inner failed, result:%s", code);
-                triggerEvent(LoginEvent.LOGIN_INNER_FAILED);
+                triggerEvent(CommonEvent.CE_Login_Fail);
             }break;
         }
     }
@@ -307,12 +300,12 @@ public class IMLoginManager extends IMManager
         // 判断登陆的类型
         if(isLocalLogin)
         {
-            triggerEvent(LoginEvent.LOCAL_LOGIN_MSG_SERVICE);
+            triggerEvent(CommonEvent.CE_Login_MsgService);
         }
         else
         {
             isLocalLogin = true;
-            triggerEvent(LoginEvent.LOGIN_OK);
+            triggerEvent(CommonEvent.CE_Login_OK);
         }
 
         // 发送token
@@ -385,12 +378,12 @@ public class IMLoginManager extends IMManager
         switch (statusNotify.getLoginStat()){
             case OST_Online:{
                 isPcOnline = true;
-                EventBus.getDefault().postSticky(LoginEvent.PC_ONLINE);
+                EventBus.getDefault().postSticky(CommonEvent.CE_Login_PCOnline);
             }break;
 
             case OST_Offline:{
                 isPcOnline = false;
-                EventBus.getDefault().postSticky(LoginEvent.PC_OFFLINE);
+                EventBus.getDefault().postSticky(CommonEvent.CE_Login_PCOffline);
             }break;
         }
     }
@@ -408,17 +401,17 @@ public class IMLoginManager extends IMManager
             @Override
             public void onSuccess(Object response) 
 			{
-                triggerEvent(LoginEvent.KICK_PC_SUCCESS);
+                triggerEvent(CommonEvent.CE_Login_KinckPCSuccess);
             }
             @Override
             public void onFaild() 
 			{
-                triggerEvent(LoginEvent.KICK_PC_FAILED);
+                triggerEvent(CommonEvent.CE_Login_KinckPCFail);
             }
             @Override
             public void onTimeout() 
 			{
-                triggerEvent(LoginEvent.KICK_PC_FAILED);
+                triggerEvent(CommonEvent.CE_Login_KinckPCFail);
             }
         });
     }
@@ -438,19 +431,19 @@ public class IMLoginManager extends IMManager
         return everLogined;
     }
 
-    public void setEverLogined(boolean everLogined) {
-        this.everLogined = everLogined;
+    public void setEverLogined(boolean set) {
+        this.everLogined = set;
     }
 
     public UserEntity getLoginInfo() {
         return loginInfo;
     }
 
-    public void setLoginInfo(UserEntity loginInfo) {
-        this.loginInfo = loginInfo;
+    public void setLoginInfo(UserEntity info) {
+        this.loginInfo = info;
     }
 
-    public LoginEvent getLoginStatus() {
+    public CommonEvent getLoginStatus() {
         return loginStatus;
     }
 
@@ -458,15 +451,15 @@ public class IMLoginManager extends IMManager
         return isKickout;
     }
 
-    public void setKickout(boolean isKickout) {
-        this.isKickout = isKickout;
+    public void setKickout(boolean set) {
+        this.isKickout = set;
     }
 
     public boolean isPcOnline() {
         return isPcOnline;
     }
 
-    public void setPcOnline(boolean isPcOnline) {
-        this.isPcOnline = isPcOnline;
+    public void setPcOnline(boolean set) {
+        this.isPcOnline = set;
     }
 }

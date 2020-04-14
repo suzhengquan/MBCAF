@@ -3,7 +3,7 @@ package com.MBCAF.app.manager;
 import com.MBCAF.db.DBInterface;
 import com.MBCAF.db.entity.DepartmentEntity;
 import com.MBCAF.db.entity.UserEntity;
-import com.MBCAF.app.event.UserInfoEvent;
+import com.MBCAF.app.event.CommonEvent;
 import com.MBCAF.pb.base.ProtoBuf2JavaBean;
 import com.MBCAF.pb.Proto;
 import com.MBCAF.pb.MsgServer;
@@ -20,15 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import de.greenrobot.event.EventBus;
 
-/**
- * 负责用户信息的请求
- * 为回话页面以及联系人页面提供服务
- *
- * 联系人信息管理
- * 普通用户的version  有总版本
- * 群组没有总version的概念， 每个群有version
- * 具体请参见 服务端具体的pd协议
- */
 public class IMContactManager extends IMManager {
     private Logger logger = Logger.getLogger(IMContactManager.class);
 
@@ -47,22 +38,14 @@ public class IMContactManager extends IMManager {
 
 
     @Override
-    public void doOnStart() {
+    public void onStart() {
     }
 
-    /**
-     * 登陆成功触发
-     * auto自动登陆
-     * */
     public void onNormalLoginOk(){
         onLocalLoginOk();
         onLocalNetOk();
     }
 
-    /**
-     * 加载本地DB的状态
-     * 不管是离线还是在线登陆，loadFromDb 要运行的
-     */
     public void onLocalLoginOk(){
         logger.d("contact#loadAllUserInfo");
 
@@ -82,7 +65,7 @@ public class IMContactManager extends IMManager {
             PinYin.getPinYin(deptInfo.getDepartName(), deptInfo.getPinyinElement());
             departmentMap.put(deptInfo.getDepartId(),deptInfo);
         }
-        triggerEvent(UserInfoEvent.USER_INFO_OK);
+        triggerEvent(CommonEvent.CE_User_InfoOK);
     }
 
     /**
@@ -105,17 +88,15 @@ public class IMContactManager extends IMManager {
         userMap.clear();
     }
 
-    public void triggerEvent(UserInfoEvent event) {
+    public void triggerEvent(CommonEvent event) {
         //先更新自身的状态
         switch (event){
-            case USER_INFO_OK:
+            case CE_User_InfoOK:
                 userDataReady = true;
                 break;
         }
         EventBus.getDefault().postSticky(event);
     }
-
-    /**-----------------------事件驱动---end---------*/
 
     private void reqGetAllUsers(int lastUpdateTime) {
 		logger.i("contact#reqGetAllUsers");
@@ -129,15 +110,6 @@ public class IMContactManager extends IMManager {
         imSocketManager.sendRequest(imAllUserReq, sid, cid);
 	}
 
-    /**
-     * yingmu change id from string to int
-     * @param imAllUserRsp
-     *
-     * 1.请求所有用户的信息,总的版本号version
-     * 2.匹配总的版本号，返回可能存在变更的
-     * 3.选取存在变更的，请求用户详细信息
-     * 4.更新DB，保存globalVersion 以及用户的信息
-     */
 	public void onRepAllUsers(MsgServer.VaryUserInfoListA imAllUserRsp) {
 		logger.i("contact#onRepAllUsers");
         int userId = imAllUserRsp.getUserId();
@@ -165,7 +137,7 @@ public class IMContactManager extends IMManager {
         }
 
         dbInterface.batchInsertOrUpdateUser(needDb);
-        triggerEvent(UserInfoEvent.USER_INFO_UPDATE);
+        triggerEvent(CommonEvent.CE_User_InfoUpdate);
 	}
 
     public UserEntity findContact(int buddyId){
@@ -175,10 +147,6 @@ public class IMContactManager extends IMManager {
         return null;
     }
 
-    /**
-     * 请求用户详细信息
-     * @param userIds
-     */
     public void reqGetDetaillUsers(ArrayList<Integer> userIds){
         logger.i("contact#contact#reqGetDetaillUsers");
         if(null == userIds || userIds.size() <=0){
@@ -196,10 +164,6 @@ public class IMContactManager extends IMManager {
         imSocketManager.sendRequest(imUsersInfoReq, sid, cid);
     }
 
-    /**
-     * 获取用户详细的信息
-     * @param imUsersInfoRsp
-     */
     public void  onRepDetailUsers(MsgServer.UserInfoListA imUsersInfoRsp){
         int loginId = imUsersInfoRsp.getUserId();
         boolean needEvent = false;
@@ -225,7 +189,7 @@ public class IMContactManager extends IMManager {
 
         // 判断有没有必要进行推送
         if(needEvent){
-            triggerEvent(UserInfoEvent.USER_INFO_UPDATE);
+            triggerEvent(CommonEvent.CE_User_InfoUpdate);
         }
     }
 
@@ -253,7 +217,6 @@ public class IMContactManager extends IMManager {
         });
         return departmentList;
     }
-
 
     public  List<UserEntity> getContactSortedList() {
         // todo eric efficiency
@@ -325,8 +288,6 @@ public class IMContactManager extends IMManager {
         return contactList;
     }
 
-
-    // 确实要将对比的抽离出来 Collections
     public  List<UserEntity> getSearchContactList(String key){
        List<UserEntity> searchList = new ArrayList<>();
        for(Map.Entry<Integer,UserEntity> entry:userMap.entrySet()){
@@ -391,12 +352,8 @@ public class IMContactManager extends IMManager {
         }
         // 部门信息更新
         dbInterface.batchInsertOrUpdateDepart(needDb);
-        triggerEvent(UserInfoEvent.USER_INFO_UPDATE);
+        triggerEvent(CommonEvent.CE_User_InfoUpdate);
     }
-
-    /**------------------------部门相关的协议 end------------------------------*/
-
-    /**-----------------------实体 get set 定义-----------------------------------*/
 
     public Map<Integer, UserEntity> getUserMap() {
         return userMap;

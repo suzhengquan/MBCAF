@@ -101,6 +101,11 @@ namespace Mdf
 
         return msg;
     }
+    //-----------------------------------------------------------------------
+    void ServerIO::destroy(Message * msg)
+    {
+        delete msg;
+    }
 	//-----------------------------------------------------------------------
 	void ServerIO::setSendSize(Mi32 size)
 	{

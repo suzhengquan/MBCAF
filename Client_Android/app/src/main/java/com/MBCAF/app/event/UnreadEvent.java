@@ -2,10 +2,7 @@ package com.MBCAF.app.event;
 
 import com.MBCAF.app.entity.UnreadEntity;
 
-/**
- */
 public class UnreadEvent {
-
     public UnreadEntity entity;
     public Event event;
 

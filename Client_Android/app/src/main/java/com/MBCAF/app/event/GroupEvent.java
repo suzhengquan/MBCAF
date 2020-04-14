@@ -3,10 +3,7 @@ package com.MBCAF.app.event;
 import com.MBCAF.db.entity.GroupEntity;
 import java.util.List;
 
-/**
- */
 public class GroupEvent {
-
     private GroupEntity groupEntity;
     private Event event;
 

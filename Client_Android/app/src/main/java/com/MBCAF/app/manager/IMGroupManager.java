@@ -7,7 +7,7 @@ import com.MBCAF.db.entity.GroupEntity;
 import com.MBCAF.db.entity.SessionEntity;
 import com.MBCAF.db.entity.UserEntity;
 import com.MBCAF.app.event.GroupEvent;
-import com.MBCAF.app.event.SessionEvent;
+import com.MBCAF.app.event.CommonEvent;
 import com.MBCAF.pb.base.EntityChangeEngine;
 import com.MBCAF.pb.base.ProtoBuf2JavaBean;
 import com.MBCAF.pb.Proto;
@@ -40,7 +40,6 @@ public class IMGroupManager extends IMManager {
     private IMLoginManager imLoginManager=IMLoginManager.instance();
     private DBInterface dbInterface = DBInterface.instance();
 
-
     // todo Pinyin的处理
     //正式群,临时群都会有的，存在竞争 如果不同时请求的话
     private Map<Integer,GroupEntity> groupMap = new ConcurrentHashMap<>();
@@ -48,7 +47,7 @@ public class IMGroupManager extends IMManager {
     private boolean isGroupReady = false;
 
     @Override
-    public void doOnStart() {
+    public void onStart() {
         groupMap.clear();
     }
 
@@ -89,9 +88,9 @@ public class IMGroupManager extends IMManager {
         EventBus.getDefault().unregister(inst);
     }
 
-    public void onEvent(SessionEvent event){
+    public void onEvent(CommonEvent event){
         switch (event){
-            case RECENT_SESSION_LIST_UPDATE:
+            case CE_Session_RecentListUpdate:
                 // groupMap 本地已经加载完毕之后才触发
                 loadSessionGroupInfo();
                 break;
@@ -445,7 +444,6 @@ public class IMGroupManager extends IMManager {
         });
     }
 
-
     /**
      * 收到群成员发生变更消息
      * 服务端主动发出
@@ -549,7 +547,6 @@ public class IMGroupManager extends IMManager {
 		return memberList;
 	}
 
-    /**------set/get 的定义*/
     public Map<Integer, GroupEntity> getGroupMap() {
         return groupMap;
     }

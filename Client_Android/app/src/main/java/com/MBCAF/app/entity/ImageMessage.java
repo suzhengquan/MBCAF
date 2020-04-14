@@ -21,19 +21,38 @@ import java.util.Comparator;
  */
 public class ImageMessage extends MessageEntity implements Serializable {
 
-    /**本地保存的path*/
     private String path = "";
-    /**图片的网络地址*/
     private String url = "";
     private int loadStatus;
 
-    //存储图片消息
     private static java.util.HashMap<Long,ImageMessage> imageMessageMap = new java.util.HashMap<Long,ImageMessage>();
     private static ArrayList<ImageMessage> imageList=null;
-    /**
-     * 添加一条图片消息
-     * @param msg
-     */
+
+    public static synchronized void clearImageMessageList(){
+        imageMessageMap.clear();
+        imageMessageMap.clear();
+    }
+
+    public ImageMessage(){
+        msgId = IMSeqNumManager.getInstance().makelocalUniqueMsgId();
+    }
+
+    /**消息拆分的时候需要*/
+    private ImageMessage(MessageEntity entity){
+        /**父类的id*/
+         id =  entity.getId();
+         msgId  = entity.getMsgId();
+         fromId = entity.getFromId();
+         toId   = entity.getToId();
+        sessionKey = entity.getSessionKey();
+         content=entity.getContent();
+         msgType=entity.getMsgType();
+         displayType=entity.getDisplayType();
+         status = entity.getStatus();
+         created = entity.getCreated();
+         updated = entity.getUpdated();
+    }
+
     public static synchronized void addToImageMessageList(ImageMessage msg){
         try {
             if(msg!=null && msg.getId()!=null)
@@ -44,10 +63,6 @@ public class ImageMessage extends MessageEntity implements Serializable {
         }
     }
 
-    /**
-     * 获取图片列表
-     * @return
-     */
     public static ArrayList<ImageMessage> getImageMessageList(){
         imageList = new ArrayList<>();
         java.util.Iterator it = imageMessageMap.keySet().iterator();
@@ -69,36 +84,6 @@ public class ImageMessage extends MessageEntity implements Serializable {
             }
         });
         return imageList;
-    }
-
-    /**
-     * 清除图片列表
-     */
-    public static synchronized void clearImageMessageList(){
-        imageMessageMap.clear();
-        imageMessageMap.clear();
-    }
-
-
-
-    public ImageMessage(){
-        msgId = IMSeqNumManager.getInstance().makelocalUniqueMsgId();
-    }
-
-    /**消息拆分的时候需要*/
-    private ImageMessage(MessageEntity entity){
-        /**父类的id*/
-         id =  entity.getId();
-         msgId  = entity.getMsgId();
-         fromId = entity.getFromId();
-         toId   = entity.getToId();
-        sessionKey = entity.getSessionKey();
-         content=entity.getContent();
-         msgType=entity.getMsgType();
-         displayType=entity.getDisplayType();
-         status = entity.getStatus();
-         created = entity.getCreated();
-         updated = entity.getUpdated();
     }
 
     /**接受到网络包，解析成本地的数据*/
@@ -210,9 +195,6 @@ public class ImageMessage extends MessageEntity implements Serializable {
         return imageMessage;
     }
 
-    /**
-     * Not-null value.
-     */
     @Override
     public String getContent() {
         JSONObject extraContent = new JSONObject();
@@ -230,13 +212,9 @@ public class ImageMessage extends MessageEntity implements Serializable {
 
     @Override
     public byte[] getSendContent() {
-        // 发送的时候非常关键
-        String sendContent = PreDefine.Image_Magic_Begin
-                + url + PreDefine.Image_Magic_End;
-        /**
-         * 加密
-         */
-       String  encrySendContent =new String(com.MBCAF.app.network.Security.getInstance().EncryptMsg(sendContent));
+        String sendContent = PreDefine.Image_Magic_Begin  + url + PreDefine.Image_Magic_End;
+
+        String  encrySendContent =new String(com.MBCAF.app.network.Security.getInstance().EncryptMsg(sendContent));
 
         try {
             return encrySendContent.getBytes("utf-8");
@@ -246,7 +224,6 @@ public class ImageMessage extends MessageEntity implements Serializable {
         return null;
     }
 
-    /**-----------------------set/get------------------------*/
     public String getPath() {
         return path;
     }

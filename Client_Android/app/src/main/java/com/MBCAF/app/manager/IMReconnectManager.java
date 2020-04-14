@@ -12,9 +12,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 
-import com.MBCAF.app.event.LoginEvent;
-import com.MBCAF.app.event.ReconnectEvent;
-import com.MBCAF.app.event.SocketEvent;
+import com.MBCAF.app.event.CommonEvent;
+import com.MBCAF.app.event.CommonEvent;
+import com.MBCAF.app.event.CommonEvent;
 import com.MBCAF.common.Logger;
 import com.MBCAF.common.SysUtil;
 
@@ -28,11 +28,8 @@ public class IMReconnectManager extends IMManager {
        return inst;
     }
 
-
-
-
     /**重连所处的状态*/
-    private volatile ReconnectEvent status = ReconnectEvent.NONE;
+    private volatile CommonEvent status = CommonEvent.CE_Reconnect_None;
 
     private final int INIT_RECONNECT_INTERVAL_SECONDS = 3;
     private int reconnectInterval = INIT_RECONNECT_INTERVAL_SECONDS;
@@ -50,16 +47,16 @@ public class IMReconnectManager extends IMManager {
      * eventBus 注册可以放在这里
      */
     @Override
-    public void doOnStart() {
+    public void onStart() {
     }
 
     public void onNormalLoginOk(){
         onLocalLoginOk();
-        status = ReconnectEvent.SUCCESS;
+        status = CommonEvent.CE_Reconnect_Success;
     }
 
     public void onLocalLoginOk(){
-       logger.d("reconnect#LoginEvent onLocalLoginOk");
+       logger.d("reconnect#CommonEvent onLocalLoginOk");
 
        if(!EventBus.getDefault().isRegistered(inst)){
            EventBus.getDefault().register(inst);
@@ -75,7 +72,7 @@ public class IMReconnectManager extends IMManager {
     /** 网络链接成功*/
     public void onLocalNetOk(){
       logger.d("reconnect#onLoginSuccess 网络链接上来,无需其他操作");
-      status = ReconnectEvent.SUCCESS;
+      status = CommonEvent.CE_Reconnect_Success;
     }
 
 
@@ -85,7 +82,7 @@ public class IMReconnectManager extends IMManager {
         try {
             EventBus.getDefault().unregister(inst);
             ctx.unregisterReceiver(imReceiver);
-            status = ReconnectEvent.NONE;
+            status = CommonEvent.CE_Reconnect_None;
             isAlarmTrigger = false;
             logger.d("reconnect#reset stop");
         }catch (Exception e){
@@ -95,44 +92,24 @@ public class IMReconnectManager extends IMManager {
         }
     }
 
-    /**
-     * 网络socket状态监听
-     * 并未登陆，请求链接消息服务器失败
-     * @param socketEvent
-     */
-    public void onEventMainThread(SocketEvent socketEvent){
-        logger.d("reconnect#SocketEvent event:%s",socketEvent.name());
-
-        //MSG_SERVER_DISCONNECTED 没有必要重连吧。。
-
-        switch (socketEvent){
-            case MSG_SERVER_DISCONNECTED:
-            case REQ_MSG_SERVER_ADDRS_FAILED:
-            case CONNECT_MSG_SERVER_FAILED:{
+    public void onEventMainThread(CommonEvent event){
+        logger.d("reconnect#CommonEvent event:%s",event.name());
+        switch (event){
+            case CE_Connect_MsgServerDisConnect:
+            case CE_Connect_MsgServerAddrAFail:
+            case CE_Connect_MsgServerConnectFail:{
                 tryReconnect();
+            }break;
+            case CE_Login_Fail: {
+                tryReconnect();
+            }break;
+            case CE_Login_MsgService: {
+                resetReconnectTime();
+                releaseWakeLock();
             }break;
         }
     }
 
-    /**
-     *
-     * @param event
-     */
-    public void onEventMainThread(LoginEvent event){
-        logger.d("reconnect#LoginEvent event: %s",event.name());
-        switch (event){
-            case LOGIN_INNER_FAILED:
-                    tryReconnect();
-                break;
-
-            case LOCAL_LOGIN_MSG_SERVICE:
-                resetReconnectTime();
-                releaseWakeLock();
-                break;
-        }
-    }
-
-    /**EventBus 没有找到延迟发送的*/
     Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -142,7 +119,7 @@ public class IMReconnectManager extends IMManager {
                       if(!SysUtil.isNetWorkAvalible(ctx)){
                           logger.w("reconnect#handleMessage#网络依旧不可用");
                           releaseWakeLock();
-                          EventBus.getDefault().post(ReconnectEvent.DISABLE);
+                          EventBus.getDefault().post(CommonEvent.CE_Reconnect_Disable);
                       }
                 }break;
             }
@@ -150,12 +127,12 @@ public class IMReconnectManager extends IMManager {
     };
 
     private boolean isReconnecting(){
-        SocketEvent socketEvent =   IMSocketManager.instance().getSocketStatus();
-        LoginEvent loginEvent = IMLoginManager.instance().getLoginStatus();
+        CommonEvent socketEvent =   IMSocketManager.instance().getSocketStatus();
+        CommonEvent loginEvent = IMLoginManager.instance().getLoginStatus();
 
-        if(socketEvent.equals(SocketEvent.CONNECTING_MSG_SERVER)
-                || socketEvent.equals(SocketEvent.REQING_MSG_SERVER_ADDRS)
-                || loginEvent.equals(LoginEvent.LOGINING)){
+        if(socketEvent.equals(CommonEvent.CE_Connect_MsgServerConnect)
+                || socketEvent.equals(CommonEvent.CE_Connect_MsgServerAddrQ)
+                || loginEvent.equals(CommonEvent.CE_Login_In)){
             return true;
         }
         return false;
@@ -174,7 +151,7 @@ public class IMReconnectManager extends IMManager {
         if(netinfo == null){
             // 延迟检测
             logger.w("reconnect#netinfo 为空延迟检测");
-            status = ReconnectEvent.DISABLE;
+            status = CommonEvent.CE_Reconnect_Disable;
             handler.sendEmptyMessageDelayed(HANDLER_CHECK_NETWORK, 2000);
             return ;
         }
@@ -184,7 +161,7 @@ public class IMReconnectManager extends IMManager {
             if (netinfo.isAvailable()) {
                 /**网络显示可用*/
                 /**判断是否有必要重练*/
-                if (status == ReconnectEvent.NONE
+                if (status == CommonEvent.CE_Reconnect_None
                         || !IMLoginManager.instance().isEverLogined()
                         || IMLoginManager.instance().isKickout()
                         || IMSocketManager.instance().isSocketConnect()
@@ -206,8 +183,8 @@ public class IMReconnectManager extends IMManager {
             } else {
                 //通知上层UI修改
                 logger.d("reconnect#网络不可用!! 通知上层");
-                status = ReconnectEvent.DISABLE;
-                EventBus.getDefault().post(ReconnectEvent.DISABLE);
+                status = CommonEvent.CE_Reconnect_Disable;
+                EventBus.getDefault().post(CommonEvent.CE_Reconnect_Disable);
             }
         }
     }
@@ -230,9 +207,6 @@ public class IMReconnectManager extends IMManager {
 				* 1000, pi);
 	}
 
-    /**
-     * 在RECONNECT 的时候，时间加成处理
-     */
     private void incrementReconnectInterval() {
 		if (reconnectInterval >= MAX_RECONNECT_INTERVAL_SECONDS) {
 			reconnectInterval = MAX_RECONNECT_INTERVAL_SECONDS;
@@ -241,16 +215,10 @@ public class IMReconnectManager extends IMManager {
 		}
 	}
 
-    /**
-     * 重新设定重连时间
-     */
     private void resetReconnectTime() {
         logger.d("reconnect#resetReconnectTime");
         reconnectInterval = INIT_RECONNECT_INTERVAL_SECONDS;
     }
-
-
-
 
     /**--------------------boradcast-广播相关-----------------------------*/
     private final String  ACTION_RECONNECT = "com.MBCAF.imlib.action.reconnect";
@@ -263,12 +231,6 @@ public class IMReconnectManager extends IMManager {
         }
     };
 
-    /**
-     * 【重要】这个地方作为重连判断的唯一标准
-     *  飞行模式: 触发
-     *  切换网络状态： 触发
-     *  没有网络 ： 触发
-     * */
     public void onAction(String action, Intent intent) {
         logger.d("reconnect#onAction action:%s", action);
         if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
@@ -280,10 +242,6 @@ public class IMReconnectManager extends IMManager {
         }
     }
 
-    /**
-     * 设定的调度开始执行
-     * todo 其他reconnect需要获取锁嘛
-     */
     private void handleReconnectServer() {
         logger.d("reconnect#handleReconnectServer#定时任务触发");
         acquireWakeLock();

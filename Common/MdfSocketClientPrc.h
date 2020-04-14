@@ -61,6 +61,11 @@ namespace Mdf
 		@version 0.9.1
 		*/
 		Mi32 send(void * data, MCount cnt);
+        
+		/**
+		@version 0.9.1
+		*/
+		Mi32 sendHead(void * data, MCount cnt);
 
 		/**
 		@version 0.9.1
@@ -118,6 +123,7 @@ namespace Mdf
 		int mDebugMark;
     #endif
         bool mAutoDestroy;
+        volatile bool mSpliteMessage;
     };
 }
 

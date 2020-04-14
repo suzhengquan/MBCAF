@@ -65,11 +65,6 @@ public class TextMessage extends MessageEntity implements Serializable {
         return textMessage;
     }
 
-
-    /**
-     * Not-null value.
-     * DB的时候需要
-     */
     @Override
     public String getContent() {
         return content;

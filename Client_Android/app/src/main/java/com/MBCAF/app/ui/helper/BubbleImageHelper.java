@@ -123,8 +123,6 @@ public class BubbleImageHelper {
                 srcHeight = MAX_HEIGHT;
             }
         }
-        
         srcBitmap = getScaleImage(srcBitmap, srcWidth, srcHeight);
     }
-    
 }

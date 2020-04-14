@@ -32,8 +32,8 @@ public class Emoparser {
     private static Emoparser instance = null;
 
     public static boolean isGifEmo = false;
-    private final int DEFAULT_SMILEY_TEXTS = R.array.default_emo_phrase;
-    private final int YAYA_EMO_TEXTS = R.array.yaya_emo_phrase;
+    private final int DEFAULT_SMILEY_TEXTS = R.array.emoji0;
+    private final int YAYA_EMO_TEXTS = R.array.emoji2;
     private final int[] DEFAULT_EMO_RES_IDS = {
             R.drawable.tt_e0, R.drawable.tt_e1,
             R.drawable.tt_e2, R.drawable.tt_e3, R.drawable.tt_e4, R.drawable.tt_e5,

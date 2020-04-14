@@ -27,7 +27,7 @@ public class IMHeartBeatManager  extends  IMManager{
     private PendingIntent pendingIntent;
 
     @Override
-    public void doOnStart() {
+    public void onStart() {
     }
 
     // 登陆成功之后

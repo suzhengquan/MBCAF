@@ -7,7 +7,7 @@ import android.media.AudioTrack;
 import android.os.RecoverySystem.ProgressListener;
 
 import com.MBCAF.app.ui.adapter.MessageAdapter;
-import com.MBCAF.app.event.AudioEvent;
+import com.MBCAF.app.event.CommonEvent;
 import com.MBCAF.common.Logger;
 
 import java.io.EOFException;
@@ -179,7 +179,7 @@ public class SpeexDecoder {
                 track.stop();
                 track.release();
             }
-            EventBus.getDefault().post(AudioEvent.AUDIO_STOP_PLAY);
+            EventBus.getDefault().post(CommonEvent.CE_Audio_Stop);
         }
 
         dis.close();

@@ -62,7 +62,8 @@ namespace Mdf
 		mStrategy(ACE_Reactor::instance(), this, ACE_Event_Handler::WRITE_MASK),
 		mBase(0),
 		mDebugMark(0),
-        mAutoDestroy(true)
+        mAutoDestroy(true),
+        mSpliteMessage(false)
 	{
 		bool nodelay = true;
 		peer().enable(ACE_NONBLOCK);
@@ -76,7 +77,8 @@ namespace Mdf
         mStrategy(tor ? tor : ACE_Reactor::instance(), this, ACE_Event_Handler::WRITE_MASK),
 		mBase(base),
 		mDebugMark(0),
-        mAutoDestroy(true)
+        mAutoDestroy(true),
+        mSpliteMessage(false)
     {
 		bool nodelay = true;
 		peer().enable(ACE_NONBLOCK);
@@ -125,6 +127,24 @@ namespace Mdf
         {
             ScopeLock tlock(mOutMute);
             putq(block);//autowakeupwrite
+        }
+		return cnt;
+	}
+	//-----------------------------------------------------------------------
+	Mi32 SocketClientPrc::sendHead(void * data, MCount cnt)
+	{
+		if(mBase->isStop())
+			return 0;
+
+		ACE_Message_Block * block = 0;
+		ACE_NEW_RETURN(block, ACE_Message_Block(cnt), -1);
+		block->copy((const char *)data, cnt);
+        {
+            ScopeLock tlock(mOutMute);
+            if(mSpliteMessage)
+                putq(block);
+            else
+                ungetq(block);
         }
 		return cnt;
 	}
@@ -201,7 +221,7 @@ namespace Mdf
 				mBase->onMessage(msg);
 
 				mReceiveBuffer.readSkip(msgsize);
-				delete msg;
+				mBase->destroy(msg);
 				msg = NULL;
 			}
 		}
@@ -235,6 +255,9 @@ namespace Mdf
 		//ACE_Time_Value nowait(ACE_OS::gettimeofday());
 		while (-1 != getq(mb))
 		{
+            mOutMute.lock();
+            mSpliteMessage = true;
+            mOutMute.unlock();
 			ssize_t dsedsize = peer().send(mb->rd_ptr(), mb->length());
 			if (dsedsize <= 0)
 			{
@@ -258,10 +281,13 @@ namespace Mdf
 				ungetq(mb);
 				break;
 			}
+            mOutMute.lock();
+            mSpliteMessage = false;
+            mOutMute.unlock();
             mb->release();
             mSendMark = M_Only(ConnectManager)->getTimeTick();
 		}
-
+        
         if (mBase->isAbort())
         {
             INVOCATION_RETURN(-1);

@@ -25,8 +25,8 @@ import com.MBCAF.db.entity.GroupEntity;
 import com.MBCAF.db.entity.UserEntity;
 import com.MBCAF.R;
 import com.MBCAF.app.entity.SearchElement;
-import com.MBCAF.app.event.LoginEvent;
-import com.MBCAF.app.event.SocketEvent;
+import com.MBCAF.app.event.CommonEvent;
+import com.MBCAF.app.event.CommonEvent;
 import com.MBCAF.app.ui.activity.GroupMemberSelectActivity;
 import com.MBCAF.app.ui.activity.MessageActivity;
 import com.MBCAF.app.ui.activity.UserInfoActivity;
@@ -70,22 +70,22 @@ public class IMUIHelper
 
 
     // 根据event 展示提醒文案
-    public static int getLoginErrorTip(LoginEvent event) {
+    public static int getLoginErrorTip(CommonEvent event) {
         switch (event) {
-            case LOGIN_AUTH_FAILED:
+            case CE_Login_FailAuth:
                 return R.string.t076;
-            case LOGIN_INNER_FAILED:
+            case CE_Login_Fail:
                 return R.string.t077;
             default :
                 return  R.string.t077;
         }
     }
 
-    public static int getSocketErrorTip(SocketEvent event) {
+    public static int getSocketErrorTip(CommonEvent event) {
         switch (event) {
-            case CONNECT_MSG_SERVER_FAILED :
+            case CE_Connect_MsgServerConnectFail :
                 return R.string.t074;
-            case REQ_MSG_SERVER_ADDRS_FAILED :
+            case CE_Connect_MsgServerAddrAFail :
                 return R.string.t073;
             default :
                 return  R.string.t077;

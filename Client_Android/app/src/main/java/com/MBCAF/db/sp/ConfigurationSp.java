@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import com.MBCAF.app.event.SessionEvent;
+import com.MBCAF.app.event.CommonEvent;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -96,7 +96,7 @@ public class ConfigurationSp {
         editor.putStringSet(CfgDimension.SESSIONTOP.name(), newList);
         //提交当前数据
         editor.apply();
-        EventBus.getDefault().post(SessionEvent.SET_SESSION_TOP);
+        EventBus.getDefault().post(CommonEvent.CE_Session_SetTop);
     }
 
 

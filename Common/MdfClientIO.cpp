@@ -103,6 +103,11 @@ namespace Mdf
         return msg;
     }
     //-----------------------------------------------------------------------
+    void ClientIO::destroy(Message * msg)
+    {
+        delete msg;
+    }
+    //-----------------------------------------------------------------------
     void ClientIO::setTimer(bool set, TimeDurMS delay, TimeDurMS interval)
     {
         if (mReactor)

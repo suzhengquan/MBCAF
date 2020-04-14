@@ -7,7 +7,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.MBCAF.db.sp.SystemConfigSp;
 import com.MBCAF.app.PreDefine;
-import com.MBCAF.app.event.SocketEvent;
+import com.MBCAF.app.event.CommonEvent;
 import com.MBCAF.app.network.MsgServerHandler;
 import com.MBCAF.app.network.SocketThread;
 import com.MBCAF.pb.Proto;
@@ -49,15 +49,15 @@ public class IMSocketManager extends IMManager
     private  MsgServerAddrsEntity currentMsgAddress = null;
 
     /**自身状态 */
-     private SocketEvent socketStatus = SocketEvent.NONE;
+     private CommonEvent socketStatus = CommonEvent.CE_NONE;
 
     /**
      * 获取Msg地址，等待链接
      */
     @Override
-    public void doOnStart() 
+    public void onStart()
     {
-        socketStatus = SocketEvent.NONE;
+        socketStatus = CommonEvent.CE_NONE;
     }
 
 
@@ -66,7 +66,7 @@ public class IMSocketManager extends IMManager
     public void reset() 
     {
         disconnectMsgServer();
-        socketStatus = SocketEvent.NONE;
+        socketStatus = CommonEvent.CE_NONE;
         currentMsgAddress = null;
     }
 
@@ -74,23 +74,17 @@ public class IMSocketManager extends IMManager
      * 实现自身的事件驱动
      * @param event
      */
-    public void triggerEvent(SocketEvent event) 
+    public void triggerEvent(CommonEvent event)
     {
        setSocketStatus(event);
        EventBus.getDefault().postSticky(event);
     }
-
-    /**-------------------------------功能方法--------------------------------------*/
 
     public void sendRequest(GeneratedMessageV3 requset,int sid,int cid)
     {
         sendRequest(requset,sid,cid,null);
     }
 
-
-    /**
-     * todo check exception
-     * */
     public void sendRequest(GeneratedMessageV3 requset, int sid, int cid, IMPacketManager.PacketListener packetlistener)
     {
         int seqNo = 0;
@@ -150,16 +144,6 @@ public class IMSocketManager extends IMManager
         }
     }
 
-
-
-    /**
-     * 新版本流程如下
-     1.客户端通过域名获得login_server的地址
-     2.客户端通过login_server获得msg_serv的地址
-     3.客户端带着用户名密码对msg_serv进行登录
-     4.msg_serv转给db_proxy进行认证（do not care on client）
-     5.将认证结果返回给客户端
-     */
     public void reqMsgServerAddrs()
     {
         logger.d("socket#reqMsgServerAddrs.");
@@ -172,18 +156,18 @@ public class IMSocketManager extends IMManager
                 MsgServerAddrsEntity msgServer = (MsgServerAddrsEntity) o;
                 if(msgServer == null)
                 {
-                    triggerEvent(SocketEvent.REQ_MSG_SERVER_ADDRS_FAILED);
+                    triggerEvent(CommonEvent.CE_Connect_MsgServerAddrAFail);
                     return;
                 }
                 connectMsgServer(msgServer);
-                triggerEvent(SocketEvent.REQ_MSG_SERVER_ADDRS_SUCCESS);
+                triggerEvent(CommonEvent.CE_Connect_MsgServerAddrASuccess);
             }
 
             @Override
             public void onFailure(int i, Header[] headers, Throwable throwable, String responseString, Object o)
             {
                 logger.d("socket#req msgAddress Failure, errorResponse:%s", responseString);
-                triggerEvent(SocketEvent.REQ_MSG_SERVER_ADDRS_FAILED);
+                triggerEvent(CommonEvent.CE_Connect_MsgServerAddrAFail);
             }
 
             @Override
@@ -197,12 +181,9 @@ public class IMSocketManager extends IMManager
         });
     }
 
-    /**
-     * 与登陆login是强耦合的关系
-     */
     private void connectMsgServer(MsgServerAddrsEntity currentMsgAddress)
     {
-        triggerEvent(SocketEvent.CONNECTING_MSG_SERVER);
+        triggerEvent(CommonEvent.CE_Connect_MsgServerConnect);
         this.currentMsgAddress = currentMsgAddress;
 
         String priorIP = currentMsgAddress.priorIP;
@@ -235,9 +216,6 @@ public class IMSocketManager extends IMManager
         }
     }
 
-    /**
-     * 断开与msg的链接
-     */
     public void disconnectMsgServer()
     {
         listenerQueue.onDestory();
@@ -263,7 +241,7 @@ public class IMSocketManager extends IMManager
     {
         logger.i("login#onMsgServerConnected");
         listenerQueue.onStart();
-        triggerEvent(SocketEvent.CONNECT_MSG_SERVER_SUCCESS);
+        triggerEvent(CommonEvent.CE_Connect_MsgServerConnectSuccess);
         IMLoginManager.instance().reqLoginMsgServer();
     }
 
@@ -280,17 +258,14 @@ public class IMSocketManager extends IMManager
     public void onMsgServerDisconn(){
         logger.w("login#onMsgServerDisconn");
         disconnectMsgServer();
-        triggerEvent(SocketEvent.MSG_SERVER_DISCONNECTED);
+        triggerEvent(CommonEvent.CE_Connect_MsgServerDisConnect);
     }
 
     /** 之前没有连接成功*/
     public void onConnectMsgServerFail(){
-        triggerEvent(SocketEvent.CONNECT_MSG_SERVER_FAILED);
+        triggerEvent(CommonEvent.CE_Connect_MsgServerConnectFail);
     }
 
-
-    /**----------------------------请求Msg server地址--实体信息--------------------------------------*/
-    /**请求返回的数据*/
     private class MsgServerAddrsEntity {
         int code;
         String msg;
@@ -363,12 +338,11 @@ public class IMSocketManager extends IMManager
         return addrsEntity;
     }
 
-    /**------------get/set----------------------------*/
-    public SocketEvent getSocketStatus() {
+    public CommonEvent getSocketStatus() {
         return socketStatus;
     }
 
-    public void setSocketStatus(SocketEvent socketStatus) {
-        this.socketStatus = socketStatus;
+    public void setSocketStatus(CommonEvent state) {
+        this.socketStatus = state;
     }
 }

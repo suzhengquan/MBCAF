@@ -13,7 +13,7 @@ import com.MBCAF.db.entity.SessionEntity;
 import com.MBCAF.db.sp.ConfigurationSp;
 import com.MBCAF.app.entity.RecentInfo;
 import com.MBCAF.app.entity.UnreadEntity;
-import com.MBCAF.app.event.SessionEvent;
+import com.MBCAF.app.event.CommonEvent;
 import com.MBCAF.pb.base.EntityChangeEngine;
 import com.MBCAF.pb.base.Java2ProtoBuf;
 import com.MBCAF.pb.base.ProtoBuf2JavaBean;
@@ -31,10 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import de.greenrobot.event.EventBus;
 
-/**
- * app显示首页
- * 最近联系人列表
- */
 public class IMSessionManager extends IMManager {
     private Logger logger = Logger.getLogger(IMSessionManager.class);
     private static  IMSessionManager inst = new IMSessionManager();
@@ -53,7 +49,7 @@ public class IMSessionManager extends IMManager {
     private boolean sessionListReady = false;
 
     @Override
-    public void doOnStart() {}
+    public void onStart() {}
 
     @Override
     public void reset() {
@@ -65,9 +61,9 @@ public class IMSessionManager extends IMManager {
      * 实现自身的事件驱动
      * @param event
      */
-    public void triggerEvent(SessionEvent event) {
+    public void triggerEvent(CommonEvent event) {
         switch (event){
-            case RECENT_SESSION_LIST_SUCCESS:
+            case CE_Session_RecentListSuccess:
                 sessionListReady = true;
             break;
         }
@@ -87,7 +83,7 @@ public class IMSessionManager extends IMManager {
             sessionMap.put(sessionInfo.getSessionKey(), sessionInfo);
         }
 
-        triggerEvent(SessionEvent.RECENT_SESSION_LIST_SUCCESS);
+        triggerEvent(CommonEvent.CE_Session_RecentListSuccess);
     }
 
     public void onLocalNetOk(){
@@ -139,7 +135,7 @@ public class IMSessionManager extends IMManager {
         //将最新的session信息保存在DB中
         dbInterface.batchInsertOrUpdateSession(needDb);
         if(needDb.size()>0){
-            triggerEvent(SessionEvent.RECENT_SESSION_LIST_UPDATE);
+            triggerEvent(CommonEvent.CE_Session_RecentListUpdate);
         }
     }
 
@@ -157,7 +153,7 @@ public class IMSessionManager extends IMManager {
             IMUnreadMsgManager.instance().readUnreadSession(sessionKey);
             dbInterface.deleteSession(sessionKey);
             ConfigurationSp.instance(ctx,loginId).setSessionTop(sessionKey,false);
-            triggerEvent(SessionEvent.RECENT_SESSION_LIST_UPDATE);
+            triggerEvent(CommonEvent.CE_Session_RecentListUpdate);
         }
 
         MsgServer.RemoveSessionQ removeSessionReq = MsgServer.RemoveSessionQ
@@ -201,7 +197,7 @@ public class IMSessionManager extends IMManager {
         ArrayList<SessionEntity> needDb = new ArrayList<>(1);
         needDb.add(sessionEntity);
         dbInterface.batchInsertOrUpdateSession(needDb);
-        triggerEvent(SessionEvent.RECENT_SESSION_LIST_UPDATE);
+        triggerEvent(CommonEvent.CE_Session_RecentListUpdate);
     }
 
 
@@ -250,7 +246,7 @@ public class IMSessionManager extends IMManager {
         dbInterface.batchInsertOrUpdateSession(needDb);
 
         sessionMap.put(sessionEntity.getSessionKey(), sessionEntity);
-        triggerEvent(SessionEvent.RECENT_SESSION_LIST_UPDATE);
+        triggerEvent(CommonEvent.CE_Session_RecentListUpdate);
     }
 
 

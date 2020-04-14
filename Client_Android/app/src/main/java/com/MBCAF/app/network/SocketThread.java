@@ -116,7 +116,6 @@ public class SocketThread extends Thread {
         channelFuture.cancel();
 	}
 
-
     // todo check
     @Deprecated
     public boolean isClose(){
@@ -131,7 +130,6 @@ public class SocketThread extends Thread {
         DataBuffer bodyBuffer = new DataBuffer();
         int bodySize = requset.getSerializedSize();
         bodyBuffer.writeBytes(requset.toByteArray());
-
 
         DataBuffer buffer = new DataBuffer(PreDefine.PROTOCOL_HEADER_LENGTH  + bodySize);
         buffer.writeDataBuffer(headerBuffer);

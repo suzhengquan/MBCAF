@@ -8,7 +8,7 @@ import android.view.Window;
 
 import com.MBCAF.R;
 import com.MBCAF.app.PreDefine;
-import com.MBCAF.app.event.LoginEvent;
+import com.MBCAF.app.event.CommonEvent;
 import com.MBCAF.app.event.UnreadEvent;
 import com.MBCAF.app.network.IMService;
 import com.MBCAF.app.ui.fragment.ChatFragment;
@@ -200,9 +200,9 @@ public class MainActivity extends FragmentActivity{
 
     }
 
-	public void onEventMainThread(LoginEvent event){
+	public void onEventMainThread(CommonEvent event){
         switch (event){
-            case LOGIN_OUT:
+            case CE_Login_Out:
                 handleOnLogout();
                 break;
         }

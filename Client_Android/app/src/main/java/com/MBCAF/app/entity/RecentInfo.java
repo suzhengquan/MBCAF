@@ -31,7 +31,6 @@ public class RecentInfo {
     /**是否屏蔽信息*/
     private boolean isForbidden = false;
 
-
     public RecentInfo(){}
     public RecentInfo(SessionEntity sessionEntity,UserEntity entity,UnreadEntity unreadEntity){
         sessionKey = sessionEntity.getSessionKey();
@@ -52,7 +51,6 @@ public class RecentInfo {
             avatar = avatarList;
         }
     }
-
 
     public RecentInfo(SessionEntity sessionEntity,GroupEntity groupEntity,UnreadEntity unreadEntity){
         sessionKey =  sessionEntity.getSessionKey();

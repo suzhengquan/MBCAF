@@ -28,8 +28,8 @@ import com.MBCAF.db.sp.SystemConfigSp;
 import com.MBCAF.R;
 import com.MBCAF.app.PreDefine;
 import com.MBCAF.common.IMUIHelper;
-import com.MBCAF.app.event.LoginEvent;
-import com.MBCAF.app.event.SocketEvent;
+import com.MBCAF.app.event.CommonEvent;
+import com.MBCAF.app.event.CommonEvent;
 import com.MBCAF.app.manager.IMLoginManager;
 import com.MBCAF.app.network.IMService;
 import com.MBCAF.app.ui.base.TTBaseActivity;
@@ -435,29 +435,24 @@ public class LoginActivity extends TTBaseActivity
     /**
      * ----------------------------event 事件驱动----------------------------
      */
-    public void onEventMainThread(LoginEvent event)
+    public void onEventMainThread(CommonEvent event)
     {
         switch (event) {
-            case LOCAL_LOGIN_SUCCESS:
-            case LOGIN_OK:
+            case CE_Login_Success:
+            case CE_Login_OK:
                 onLoginSuccess();
                 break;
-            case LOGIN_AUTH_FAILED:
-            case LOGIN_INNER_FAILED:
+            case CE_Login_FailAuth:
+            case CE_Login_Fail: {
                 if (!loginSuccess)
                     onLoginFailure(event);
+            }
                 break;
-        }
-    }
-
-
-    public void onEventMainThread(SocketEvent event)
-    {
-        switch (event) {
-            case CONNECT_MSG_SERVER_FAILED:
-            case REQ_MSG_SERVER_ADDRS_FAILED:
+            case CE_Connect_MsgServerConnectFail:
+            case CE_Connect_MsgServerAddrAFail: {
                 if (!loginSuccess)
                     onSocketFailure(event);
+            }
                 break;
         }
     }
@@ -471,7 +466,7 @@ public class LoginActivity extends TTBaseActivity
         LoginActivity.this.finish();
     }
 
-    private void onLoginFailure(LoginEvent event)
+    private void onLoginFailure(CommonEvent event)
     {
         logger.e("login#onLoginError -> errorCode:%s", event.name());
         showLoginPage();
@@ -481,7 +476,7 @@ public class LoginActivity extends TTBaseActivity
         Toast.makeText(this, errorTip, Toast.LENGTH_SHORT).show();
     }
 
-    private void onSocketFailure(SocketEvent event)
+    private void onSocketFailure(CommonEvent event)
     {
         logger.e("login#onLoginError -> errorCode:%s,", event.name());
         showLoginPage();

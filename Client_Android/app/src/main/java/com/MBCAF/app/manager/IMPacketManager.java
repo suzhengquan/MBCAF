@@ -156,7 +156,6 @@ public class IMPacketManager
         callBackQueue.put(seqNo,packetlistener);
     }
 
-
     public PacketListener pop(int seqNo)
     {
         synchronized (IMPacketManager.this)

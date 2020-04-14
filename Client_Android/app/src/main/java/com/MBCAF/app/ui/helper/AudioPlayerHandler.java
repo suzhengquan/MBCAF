@@ -4,7 +4,7 @@ package com.MBCAF.app.ui.helper;
 import android.content.Context;
 import android.media.AudioManager;
 
-import com.MBCAF.app.event.AudioEvent;
+import com.MBCAF.app.event.CommonEvent;
 import com.MBCAF.app.audio.SpeexDecoder;
 import com.MBCAF.common.Logger;
 
@@ -74,9 +74,9 @@ public class AudioPlayerHandler{
         }
     }
 
-    public void onEventMainThread(AudioEvent audioEvent){
+    public void onEventMainThread(CommonEvent audioEvent){
         switch (audioEvent){
-            case AUDIO_STOP_PLAY:{
+            case CE_Audio_Stop:{
                 currentPlayPath = null;
                 stopPlayer();
             }break;

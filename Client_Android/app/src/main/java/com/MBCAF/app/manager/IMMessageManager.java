@@ -15,7 +15,7 @@ import com.MBCAF.app.entity.ImageMessage;
 import com.MBCAF.app.entity.TextMessage;
 import com.MBCAF.app.event.MessageEvent;
 import com.MBCAF.app.event.PriorityEvent;
-import com.MBCAF.app.event.RefreshHistoryMsgEvent;
+import com.MBCAF.app.event.RefreshHistoryEvent;
 import com.MBCAF.app.network.LoadImageService;
 import com.MBCAF.pb.base.EntityChangeEngine;
 import com.MBCAF.pb.base.Java2ProtoBuf;
@@ -80,7 +80,7 @@ public class IMMessageManager extends IMManager{
     }
 
     @Override
-    public void doOnStart() {
+    public void onStart() {
     }
 
     public void onLoginSuccess(){
@@ -134,7 +134,7 @@ public class IMMessageManager extends IMManager{
      * 如果当前线程是UI线程，事件会被加到一个队列中，由一个线程依次处理这些事件，
      * 如果某个事件处理时间太长，会阻塞后面的事件的派发或处理
      * */
-    public void onEventBackgroundThread(RefreshHistoryMsgEvent historyMsgEvent){
+    public void onEventBackgroundThread(RefreshHistoryEvent historyMsgEvent){
         doRefreshLocalMsg(historyMsgEvent);
     }
 
@@ -430,7 +430,7 @@ public class IMMessageManager extends IMManager{
         int resSize = listMsg.size();
         logger.d("LoadHistoryMsg return size is %d",resSize);
         if(resSize==0 || pullTimes == 1 || pullTimes %3==0){
-            RefreshHistoryMsgEvent historyMsgEvent = new RefreshHistoryMsgEvent();
+            RefreshHistoryEvent historyMsgEvent = new RefreshHistoryEvent();
             historyMsgEvent.pullTimes = pullTimes;
             historyMsgEvent.count = count;
             historyMsgEvent.lastMsgId = lastMsgId;
@@ -447,7 +447,7 @@ public class IMMessageManager extends IMManager{
      * asyn task
      * 因为是多端同步，本地信息并不一定完成，拉取时提前异步检测
      * */
-    private void doRefreshLocalMsg(RefreshHistoryMsgEvent hisEvent){
+    private void doRefreshLocalMsg(RefreshHistoryEvent hisEvent){
         /**check DB数据的一致性*/
         int lastSuccessMsgId = hisEvent.lastMsgId;
         List<MessageEntity> listMsg = hisEvent.listMsg;

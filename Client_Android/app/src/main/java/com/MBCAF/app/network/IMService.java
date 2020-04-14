@@ -12,7 +12,7 @@ import com.MBCAF.db.entity.MessageEntity;
 import com.MBCAF.db.sp.ConfigurationSp;
 import com.MBCAF.db.sp.LoginSp;
 import com.MBCAF.app.PreDefine;
-import com.MBCAF.app.event.LoginEvent;
+import com.MBCAF.app.event.CommonEvent;
 import com.MBCAF.app.event.PriorityEvent;
 import com.MBCAF.app.manager.IMContactManager;
 import com.MBCAF.app.manager.IMGroupManager;
@@ -98,17 +98,17 @@ public class IMService extends Service {
     }
 
     // EventBus 事件驱动
-    public void onEvent(LoginEvent event){
+    public void onEvent(CommonEvent event){
        switch (event){
-           case LOGIN_OK:
+           case CE_Login_OK:
                onNormalLoginOk();break;
-           case LOCAL_LOGIN_SUCCESS:
+           case CE_Login_Success:
                onLocalLoginOk();
                break;
-           case  LOCAL_LOGIN_MSG_SERVICE:
+           case  CE_Login_MsgService:
                onLocalNetOk();
                break;
-           case LOGIN_OUT:
+           case CE_Login_Out:
                handleLoginout();break;
        }
     }
@@ -121,16 +121,16 @@ public class IMService extends Service {
 		Context ctx = getApplicationContext();
         loginSp.init(ctx);
 
-        socketMgr.onStartIMManager(ctx);
-        loginMgr.onStartIMManager(ctx);
-        contactMgr.onStartIMManager(ctx);
-        messageMgr.onStartIMManager(ctx);
-        groupMgr.onStartIMManager(ctx);
-        sessionMgr.onStartIMManager(ctx);
-        unReadMsgMgr.onStartIMManager(ctx);
-        notificationMgr.onStartIMManager(ctx);
-        reconnectMgr.onStartIMManager(ctx);
-        heartBeatManager.onStartIMManager(ctx);
+        socketMgr.setup(ctx);
+        loginMgr.setup(ctx);
+        contactMgr.setup(ctx);
+        messageMgr.setup(ctx);
+        groupMgr.setup(ctx);
+        sessionMgr.setup(ctx);
+        unReadMsgMgr.setup(ctx);
+        notificationMgr.setup(ctx);
+        reconnectMgr.setup(ctx);
+        heartBeatManager.setup(ctx);
 
         ImageUtil.initImageLoaderConfig(ctx);
 		return START_STICKY;

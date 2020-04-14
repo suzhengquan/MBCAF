@@ -4,10 +4,7 @@ import com.MBCAF.db.entity.MessageEntity;
 
 import java.util.List;
 
-/**
- * 异步刷新历史消息
- */
-public class RefreshHistoryMsgEvent {
+public class RefreshHistoryEvent {
    public int pullTimes;
    public int lastMsgId;
    public int count;
@@ -16,6 +13,6 @@ public class RefreshHistoryMsgEvent {
    public int peerType;
    public String sessionKey;
 
-   public RefreshHistoryMsgEvent(){}
+   public RefreshHistoryEvent(){}
 
 }

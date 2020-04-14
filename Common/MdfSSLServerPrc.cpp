@@ -187,7 +187,7 @@ namespace Mdf
 				mBase->onMessage(msg);
 
                 mReceiveBuffer.readSkip(msgsize);
-                delete msg;
+                mBase->destroy(msg);
                 msg = NULL;
             }
         }
@@ -219,6 +219,9 @@ namespace Mdf
                 sedsize = M_SocketOutSize;
             }
 
+            mOutMute.lock();
+            mSplitMessage = true;
+            mOutMute.unlock();
             int dsedsize = SSL_write(mSSL, mb->rd_ptr(), sedsize);
             if (dsedsize < 0)
             {
@@ -250,13 +253,34 @@ namespace Mdf
             {
                 mb->rd_ptr((size_t)dsedsize);
             }
+            mSendMark = M_Only(ConnectManager)->getTimeTick();
+            
             if (mb->length() <= 0)
             {
-                mOutQueue.dequeue_head(mb);
-                mb->release();
+                ScopeLock tlock(mOutMute);
+                mSplitMessage = false;
+                ACE_Message_Block * cnt = mb->cont();
+                if(cnt)
+                {
+                    mb->cont(0);
+                    mOutQueue.dequeue_head(mb);
+                    mb->release();
+                    if (mOutQueue.enqueue_head(cnt) == -1)//autowakeupwrite
+                    {
+                        cnt->release();
+                        INVOCATION_RETURN(-1);
+                    }
+                }
+                else
+                {
+                    mOutQueue.dequeue_head(mb);
+                    mb->release();
+                }
+            }
+            else
+            {
                 break;
             }
-			mSendMark = M_Only(ConnectManager)->getTimeTick();
         }
 
         if (mBase->isAbort())

@@ -43,7 +43,6 @@ public class MsgAnalyzeEngine {
         return finalRes;
     }
 
-
     // 抽离放在同一的地方
     public static MessageEntity analyzeMessage(Proto.MsgInfo msgInfo) {
        MessageEntity messageEntity = new MessageEntity();
@@ -81,12 +80,6 @@ public class MsgAnalyzeEngine {
        }
     }
 
-
-    /**
-     * todo 优化字符串分析
-     * @param msg
-     * @return
-     */
     private static List<MessageEntity> textDecode(MessageEntity msg){
         List<MessageEntity> msgList = new ArrayList<>();
 
@@ -138,7 +131,6 @@ public class MsgAnalyzeEngine {
 
         return msgList;
     }
-
 
     public static MessageEntity addMessage(MessageEntity msg,String strContent) {
         if (TextUtils.isEmpty(strContent.trim())){

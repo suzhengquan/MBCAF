@@ -17,7 +17,7 @@ import com.MBCAF.db.entity.UserEntity;
 import com.MBCAF.R;
 import com.MBCAF.app.PreDefine;
 import com.MBCAF.app.event.GroupEvent;
-import com.MBCAF.app.event.UserInfoEvent;
+import com.MBCAF.app.event.CommonEvent;
 import com.MBCAF.app.network.IMServiceConnector;
 import com.MBCAF.app.manager.IMContactManager;
 import com.MBCAF.app.network.IMService;
@@ -297,10 +297,10 @@ public class ContactFragment extends MainFragment implements OnTouchingLetterCha
         }
     }
 
-    public void onEventMainThread(UserInfoEvent event) {
+    public void onEventMainThread(CommonEvent event) {
         switch (event) {
-            case USER_INFO_UPDATE:
-            case USER_INFO_OK:
+            case CE_User_InfoUpdate:
+            case CE_User_InfoOK:
                 renderDeptList();
                 renderUserList();
                 searchDataReady();
