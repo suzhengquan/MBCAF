@@ -142,7 +142,7 @@ namespace Mdf
 		}
 
         ACE_Message_Block * block = 0;
-        ACE_NEW_RETURN(block, ACE_Message_Block(data, cnt), -1);
+        ACE_NEW_RETURN(block, ACE_Message_Block((const char *)data, cnt), -1);
         block->copy((const char *)data, cnt);
         {
             ScopeLock tlock(mOutMute);
@@ -295,9 +295,9 @@ namespace Mdf
                 sedsize = M_SocketOutSize;
             }
 
-            mOutMute.lock();
+            mOutMute.acquire();
             mSplitMessage = true;
-            mOutMute.unlock();
+            mOutMute.release();
             int dsedsize = mBase->getStream()->send(mb->rd_ptr(), sedsize);
             if(dsedsize <= 0)
             {

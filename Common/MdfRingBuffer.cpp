@@ -125,7 +125,7 @@ namespace Mdf
     //-----------------------------------------------------------------------
     RingLoopBuffer::~RingLoopBuffer()
     {
-        destroy_buffer();
+        free();
     }
     //-----------------------------------------------------------------------
     bool RingLoopBuffer::alloc(Mui32 nsize)
@@ -143,7 +143,7 @@ namespace Mdf
     {
         if (mData != NULL)
         {
-            free(mData);
+            ::free(mData);
             mData = NULL;
             mHead = 0;
             mTail = 0;
@@ -172,7 +172,7 @@ namespace Mdf
             else
             {
                 memcpy(&mData[mTail], in, nrest_tail);
-                memcpy(&mData[0], &in[nrest_tail], size - nrest_tail);
+                memcpy(&mData[0], (Mui8 *)in + nrest_tail, size - nrest_tail);
             }
         }
         mTail = (mTail + size) % mAllocSize;
@@ -197,7 +197,7 @@ namespace Mdf
             else
             {
                 memcpy(out, &mData[mHead], nrestsize);
-                memcpy(&out[nrestsize], &mData[0], dstsize - nrestsize);
+                memcpy((Mui8 *)out + nrestsize, &mData[0], dstsize - nrestsize);
             }
         }
         mWriteSize -= dstsize;
@@ -222,7 +222,7 @@ namespace Mdf
             else
             {
                 memcpy(out, &mData[mHead], nrestsize);
-                memcpy(&out[nrestsize], &mData[0], dstsize - nrestsize);
+                memcpy((Mui8 *)out + nrestsize, &mData[0], dstsize - nrestsize);
             }
         }
         return dstsize;

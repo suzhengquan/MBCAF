@@ -130,8 +130,9 @@ namespace Mdf
 	void Thread::destroy()
 	{
         mCondition.lock(); 
-		ACE_Thread_Manager::instance()->cancel_grp(mTGroup);
+        ACE_Thread_Manager::instance()->cancel_grp(mTGroup);
 		mCondition.signalAll();
+        mCondition.unlock();
 
         mExitCondition.lock();
         while(mExitCount < mCount)

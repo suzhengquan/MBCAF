@@ -47,7 +47,7 @@ namespace Mdf
         /**
         @version 0.9.1
         */
-        virtual Mui8 getType const { return 1; }
+        virtual Mui8 getType() const { return 1; }
         
         /**
         @version 0.9.1
@@ -157,7 +157,7 @@ namespace Mdf
         /**
         @version 1.1.0
         */
-        virtual destroy(Message * msg);
+        virtual void destroy(Message * msg);
 
         /**
         @version 0.9.1

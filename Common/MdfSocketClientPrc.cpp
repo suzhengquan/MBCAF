@@ -255,9 +255,9 @@ namespace Mdf
 		//ACE_Time_Value nowait(ACE_OS::gettimeofday());
 		while (-1 != getq(mb))
 		{
-            mOutMute.lock();
+            mOutMute.acquire();
             mSpliteMessage = true;
-            mOutMute.unlock();
+            mOutMute.release();
 			ssize_t dsedsize = peer().send(mb->rd_ptr(), mb->length());
 			if (dsedsize <= 0)
 			{
@@ -281,9 +281,9 @@ namespace Mdf
 				ungetq(mb);
 				break;
 			}
-            mOutMute.lock();
+            mOutMute.acquire();
             mSpliteMessage = false;
-            mOutMute.unlock();
+            mOutMute.release();
             mb->release();
             mSendMark = M_Only(ConnectManager)->getTimeTick();
 		}

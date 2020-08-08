@@ -29,7 +29,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace Mdf
 {
     //-----------------------------------------------------------------------
-    ServerIO::ServerIO(ACE_Reactor * tor) :
+    ServerIO::ServerIO(ACE_Reactor * tor, Mui32 idx) :
         mReactor(tor ? tor : ACE_Reactor::instance()),
         mIndex(idx),
         mIOPrc(0),
