@@ -123,7 +123,7 @@ namespace Mdf
 		int mDebugMark;
     #endif
         bool mAutoDestroy;
-        volatile bool mSpliteMessage;
+        volatile bool mSplitMessage;
     };
 }
 

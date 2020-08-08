@@ -63,7 +63,7 @@ namespace Mdf
 		mBase(0),
 		mDebugMark(0),
         mAutoDestroy(true),
-        mSpliteMessage(false)
+        mSplitMessage(false)
 	{
 		bool nodelay = true;
 		peer().enable(ACE_NONBLOCK);
@@ -78,7 +78,7 @@ namespace Mdf
 		mBase(base),
 		mDebugMark(0),
         mAutoDestroy(true),
-        mSpliteMessage(false)
+        mSplitMessage(false)
     {
 		bool nodelay = true;
 		peer().enable(ACE_NONBLOCK);
@@ -141,7 +141,7 @@ namespace Mdf
 		block->copy((const char *)data, cnt);
         {
             ScopeLock tlock(mOutMute);
-            if(mSpliteMessage)
+            if(mSplitMessage)
                 putq(block);
             else
                 ungetq(block);
@@ -256,7 +256,7 @@ namespace Mdf
 		while (-1 != getq(mb))
 		{
             mOutMute.acquire();
-            mSpliteMessage = true;
+            mSplitMessage = true;
             mOutMute.release();
 			ssize_t dsedsize = peer().send(mb->rd_ptr(), mb->length());
 			if (dsedsize <= 0)
@@ -282,7 +282,7 @@ namespace Mdf
 				break;
 			}
             mOutMute.acquire();
-            mSpliteMessage = false;
+            mSplitMessage = false;
             mOutMute.release();
             mb->release();
             mSendMark = M_Only(ConnectManager)->getTimeTick();
