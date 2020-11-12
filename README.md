@@ -19,6 +19,8 @@ Mindeng Base Communication Application Framework
 
 ![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/screenshot3.png)
 
+![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/screenshot4.png)
+
 ## Android
 android studio <br>
 
