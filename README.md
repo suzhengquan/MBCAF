@@ -17,13 +17,15 @@ Mindeng Base Communication Application Framework
 
 ![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/gsgs.png)
 
-![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/S7.png)
+![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/s7.png)
+
+![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/s8.png)
 
 ![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/screenshot4.png)
 
 ![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/S5.png)
 
-![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/S6.png)
+![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/s6.png)
 
 ![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/screenshot3.png)
 
