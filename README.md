@@ -14,12 +14,14 @@ Mindeng Base Communication Application Framework
 
 # GSGS
 3D creative platform
-
+### screenshot:
 ![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/gsgs.png)
 
 ![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/s7.png)
 
 ![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/s9.png)
+
+![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/s10.png)
 
 ![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/s8.png)
 
@@ -32,13 +34,16 @@ Mindeng Base Communication Application Framework
 ![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/screenshot3.png)
 
 ## Android
+### requirement：
 android studio <br>
 
+### screenshot:
 (gsgs project)<br>
 ![Image text](https://github.com/suzhengquan/GSGS/blob/master/Screenshot_2019-05-13-21-47-42-712_com.MBCAF.png?raw=true)
 ## linux(X window gnome)
 [gtk](https://www.gtk.org/)<br>
 ## win32(directui atl)
+### requirement：
 [vs2017](https://visualstudio.microsoft.com/zh-hans/thank-you-downloading-visual-studio/?sku=Community&rel=15) <br>
 [Duilib](http://duilib.googlecode.com/svn/trunk) <br>
 [libiconv >= 1.14](http://www.gnu.org/software/libiconv/)<br>
