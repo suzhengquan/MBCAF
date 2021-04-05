@@ -23,6 +23,8 @@ Mindeng Base Communication Application Framework
 
 ![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/s10.png)
 
+![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/s11.png)
+
 ![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/s8.png)
 
 ![Image text](https://raw.githubusercontent.com/suzhengquan/GSGS/master/screenshot4.png)
